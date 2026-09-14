@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VetMinerals Lab | Nutrición Mineral & Clínica Veterinaria</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            vet: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#15803d',
+              600: '#166534',
+              700: '#14532d',
+              800: '#0f3a21',
+              900: '#072714'
+            },
+            clinical: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985'
+            },
+            amberVet: '#d97706',
+            alertRed: '#dc2626'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .card-hover {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    }
+    .badge-demo {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px dashed #d97706;
+    }
+    .modal-backdrop {
+      background-color: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+    }
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+    .animate-wiggle {
+      animation: wiggle 0.4s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-200">
+
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('inicio')">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-vet-600 to-teal-500 flex items-center justify-center text-white shadow-md">
+            <i data-lucide="microscope" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-xl tracking-tight text-slate-800">Vet<span class="text-vet-600">Minerals</span></span>
+              <span class="text-[11px] font-semibold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full border border-slate-200">Educativo</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-medium">Medicina Veterinaria & Nutrición</p>
+          </div>
+        </div>
+
+        <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
+          <button onclick="navigateTo('inicio')" id="nav-inicio" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-vet-600 hover:bg-slate-100 transition flex items-center gap-1.5">
+            <i data-lucide="home" class="w-4 h-4"></i> Inicio
+          </button>
+          <button onclick="navigateTo('aprender')" id="nav-aprender" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-vet-600 hover:bg-slate-100 transition flex items-center gap-1.5">
+            <i data-lucide="book-open" class="w-4 h-4"></i> Aprender
+          </button>
+          <button onclick="navigateTo('interacciones')" id="nav-interacciones" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-vet-600 hover:bg-slate-100 transition flex items-center gap-1.5">
+            <i data-lucide="git-merge" class="w-4 h-4"></i> Interacciones
+          </button>
+          <button onclick="navigateTo('repasar')" id="nav-repasar" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-vet-600 hover:bg-slate-100 transition flex items-center gap-1.5">
+            <i data-lucide="brain" class="w-4 h-4"></i> Repasar
+          </button>
+          <button onclick="navigateTo('casos')" id="nav-casos" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-vet-600 hover:bg-slate-100 transition flex items-center gap-1.5">
+            <i data-lucide="stethoscope" class="w-4 h-4"></i> Casos (<span id="nav-case-count">16</span>)
+          </button>
+          <button onclick="navigateTo('progreso')" id="nav-progreso" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-vet-600 hover:bg-slate-100 transition flex items-center gap-1.5">
+            <i data-lucide="bar-chart-2" class="w-4 h-4"></i> Progreso
+          </button>
+          <button onclick="lanzarCasoSorpresa()" class="px-3 py-2 rounded-lg text-sm font-semibold bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 transition flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="dice-5" class="w-4 h-4 text-amber-600"></i> Sorpresa
+          </button>
+        </nav>
+
+        <!-- Menú Móvil -->
+        <div class="md:hidden flex items-center gap-2">
+          <button onclick="lanzarCasoSorpresa()" class="p-2 rounded-lg bg-amber-50 text-amber-700 border border-amber-200">
+            <i data-lucide="dice-5" class="w-5 h-5"></i>
+          </button>
+          <button onclick="toggleMobileMenu()" class="p-2 rounded-lg text-slate-600 hover:bg-slate-100">
+            <i data-lucide="menu" id="menu-icon" class="w-6 h-6"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 bg-white px-4 pt-2 pb-4 space-y-1 shadow-lg absolute w-full z-50">
+      <button onclick="navigateTo('inicio'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+        <i data-lucide="home" class="w-4 h-4"></i> Inicio
+      </button>
+      <button onclick="navigateTo('aprender'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+        <i data-lucide="book-open" class="w-4 h-4"></i> Aprender minerales
+      </button>
+      <button onclick="navigateTo('interacciones'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+        <i data-lucide="git-merge" class="w-4 h-4"></i> Interacciones
+      </button>
+      <button onclick="navigateTo('repasar'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+        <i data-lucide="brain" class="w-4 h-4"></i> Repasar
+      </button>
+      <button onclick="navigateTo('casos'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+        <i data-lucide="stethoscope" class="w-4 h-4"></i> Casos clínicos
+      </button>
+      <button onclick="navigateTo('progreso'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+        <i data-lucide="bar-chart-2" class="w-4 h-4"></i> Mi progreso
+      </button>
+    </div>
+  </header>
+
+  <div id="demo-banner" class="bg-amber-50 border-b border-amber-200 text-amber-900 text-xs py-2 px-4 text-center flex items-center justify-center gap-2 relative z-30">
+    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-200 text-amber-800">MODO DEMO ACTIVO</span>
+    <span class="hidden sm:inline">Estructura científica modular activa. La base teórica integra la presentación Minerales 2026-2 como fuente principal y literatura científica complementaria. Los casos se organizan por modalidad y nivel de dificultad.</span>
+    <span class="sm:hidden">Casos y teoría con referencias estándar mientras se cargan las definitivas.</span>
+    <button onclick="document.getElementById('demo-banner').remove()" class="text-amber-700 hover:text-amber-950 font-bold ml-2">×</button>
+  </div>
+
+  <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 relative">
+
+    <!-- Notificación Toast UI (Reemplaza alert()) -->
+    <div id="toast-notification" class="fixed bottom-6 right-6 z-50 transform translate-y-full opacity-0 transition-all duration-300 bg-slate-800 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+      <i data-lucide="info" class="w-5 h-5 text-blue-400"></i>
+      <span id="toast-message" class="text-sm font-medium">Notificación</span>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VISTA 1: INICIO                            -->
+    <!-- ========================================== -->
+    <section id="view-inicio" class="view-panel space-y-8">
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-vet-900 text-white p-8 md:p-12 shadow-xl border border-slate-700">
+        <div class="relative z-10 max-w-3xl space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-vet-500/20 border border-vet-500/30 text-emerald-300 text-xs font-semibold">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Plataforma Universitaria de Simulación
+          </div>
+          <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+            Minerales en Medicina Veterinaria & Producción Animal
+          </h1>
+          <p class="text-slate-300 text-base sm:text-lg leading-relaxed">
+            Aprende, diagnostica e interviene. Entrena tu criterio clínico resolviendo casos veterinarios reales mediante toma de decisiones basada en evidencia.
+          </p>
+
+          <!-- Modos de Aplicación -->
+          <div class="pt-4 flex flex-wrap gap-3">
+            <button onclick="setAppMode('estudio'); navigateTo('casos')" class="px-5 py-3 rounded-xl bg-vet-600 hover:bg-vet-500 text-white font-semibold text-sm shadow-md transition flex items-center gap-2">
+              <i data-lucide="book-open" class="w-4 h-4"></i> Modo Estudio
+            </button>
+            <button onclick="setAppMode('examen'); navigateTo('casos')" class="px-5 py-3 rounded-xl bg-clinical-600 hover:bg-clinical-500 text-white font-semibold text-sm shadow-md transition flex items-center gap-2">
+              <i data-lucide="graduation-cap" class="w-4 h-4"></i> Modo Examen
+            </button>
+            <button onclick="setAppMode('desafio'); navigateTo('casos')" class="px-5 py-3 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold text-sm shadow-md transition flex items-center gap-2">
+              <i data-lucide="flame" class="w-4 h-4"></i> Modo Desafío
+            </button>
+          </div>
+        </div>
+        <div class="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-x-12 translate-y-8">
+          <i data-lucide="activity" class="w-96 h-96"></i>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div onclick="navigateTo('aprender')" class="cursor-pointer bg-white rounded-2xl p-6 border border-slate-200 card-hover shadow-sm flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-vet-600 flex items-center justify-center">
+              <i data-lucide="table" class="w-6 h-6"></i>
+            </div>
+            <h2 class="font-bold text-lg text-slate-800">Fichas de Minerales</h2>
+            <p class="text-sm text-slate-600 leading-relaxed">
+              Macrominerales, microminerales, fisiología, signos patognomónicos, requerimientos y claves rápidas de memorización.
+            </p>
+          </div>
+          <span class="mt-4 text-xs font-bold text-vet-600 flex items-center gap-1">Explorar catálogo <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></span>
+        </div>
+
+        <div onclick="navigateTo('interacciones')" class="cursor-pointer bg-white rounded-2xl p-6 border border-slate-200 card-hover shadow-sm flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="w-12 h-12 rounded-xl bg-blue-50 text-clinical-600 flex items-center justify-center">
+              <i data-lucide="link-2" class="w-6 h-6"></i>
+            </div>
+            <h2 class="font-bold text-lg text-slate-800">Interacciones Nutricionales</h2>
+            <p class="text-sm text-slate-600 leading-relaxed">
+              Descubre antagonismos y sinergias: Ca-P-Vit D, Cu-Mo-S, Zn-Cu, Se-Vit E y su impacto de campo.
+            </p>
+          </div>
+          <span class="mt-4 text-xs font-bold text-clinical-600 flex items-center gap-1">Ver interacciones <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></span>
+        </div>
+
+        <div onclick="navigateTo('casos')" class="cursor-pointer bg-white rounded-2xl p-6 border border-slate-200 card-hover shadow-sm flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+              <i data-lucide="heart-pulse" class="w-6 h-6"></i>
+            </div>
+            <h2 class="font-bold text-lg text-slate-800">16 Casos Clínicos Reales</h2>
+            <p class="text-sm text-slate-600 leading-relaxed">
+              Bovinos, ovinos, caprinos, equinos, cerdos, aves, perros y gatos. Toma decisiones basadas en evidencia.
+            </p>
+          </div>
+          <span class="mt-4 text-xs font-bold text-amber-700 flex items-center gap-1">Resolver casos <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VISTA 2: APRENDER MINERALES                -->
+    <!-- ========================================== -->
+    <section id="view-aprender" class="view-panel hidden space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <i data-lucide="book-open" class="w-6 h-6 text-vet-600"></i> Base de Conocimiento Mineral
+          </h2>
+          <p class="text-sm text-slate-600">Fichas técnicas con fisiología, patología y valor zootécnico.</p>
+        </div>
+
+        <div class="flex items-center gap-2 overflow-x-auto pb-1">
+          <button onclick="filtrarMinerales('todos')" id="filter-todos" class="filter-btn active px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-white transition">Todos</button>
+          <button onclick="filtrarMinerales('Macromineral')" id="filter-macro" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Macrominerales</button>
+          <button onclick="filtrarMinerales('Micromineral')" id="filter-micro" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Microminerales / Traza</button>
+          <button onclick="filtrarMinerales('Electrolito')" id="filter-electro" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Electrolitos</button>
+        </div>
+      </div>
+
+      <!-- Grid inyectado via JS -->
+      <div id="minerales-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VISTA 3: INTERACCIONES                     -->
+    <!-- ========================================== -->
+    <section id="view-interacciones" class="view-panel hidden space-y-6">
+      <div class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-6 sm:p-8 rounded-3xl shadow-md">
+        <div class="max-w-3xl space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-200 text-xs font-semibold">
+            <i data-lucide="git-merge" class="w-3.5 h-3.5"></i> Fisiopatología Integrada
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-bold">🔗 Los minerales no trabajan solos</h2>
+          <p class="text-blue-100 text-sm sm:text-base leading-relaxed">
+            El exceso o déficit de un elemento altera la absorción y biodisponibilidad de otros nutrientes.
+          </p>
+        </div>
+      </div>
+
+      <!-- Grid inyectado via JS -->
+      <div id="interacciones-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VISTA 4: REPASAR                           -->
+    <!-- ========================================== -->
+    <section id="view-repasar" class="view-panel hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <i data-lucide="brain" class="w-6 h-6 text-purple-600"></i> Gimnasio de Repaso Rápido
+          </h2>
+          <p class="text-sm text-slate-600">Preguntas activas con retroalimentación científica justificada.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-semibold text-slate-500">Filtro:</span>
+          <select id="repaso-tipo-filter" onchange="cambiarFiltroRepaso(this.value)" class="text-xs bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 font-medium text-slate-700">
+            <option value="todos">Todos</option>
+            <option value="identificacion">A. Identificación</option>
+            <option value="funcion">B. Función</option>
+            <option value="fuentes">C. Fuentes</option>
+            <option value="absorcion">D. Absorción / biodisponibilidad</option>
+            <option value="deficiencia">E. Deficiencia</option>
+            <option value="toxicidad">F. Toxicidad</option>
+            <option value="interacciones">G. Interacciones</option>
+            <option value="diagnostico">H. Diagnóstico</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Caja de ejercicios inyectada via JS -->
+      <div id="repaso-box" class="max-w-3xl mx-auto bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm"></div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VISTA 5: CASOS CLÍNICOS                    -->
+    <!-- ========================================== -->
+    <section id="view-casos" class="view-panel hidden space-y-6">
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                <i data-lucide="stethoscope" class="w-6 h-6 text-vet-600"></i> Simulador Clínico
+              </h2>
+              <span id="current-mode-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-vet-700 border border-emerald-200">
+                Modo Estudio
+              </span>
+            </div>
+            <p id="case-count-summary" class="text-xs sm:text-sm text-slate-600 mt-1">Casos clínicos y productivos organizados por modalidad.</p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="flex rounded-lg border border-slate-200 p-1 bg-slate-50 text-xs font-semibold">
+              <button onclick="setAppMode('estudio')" id="btn-mode-estudio" class="mode-toggle-btn px-2.5 py-1 rounded-md bg-white shadow-xs text-vet-700">Estudio</button>
+              <button onclick="setAppMode('examen')" id="btn-mode-examen" class="mode-toggle-btn px-2.5 py-1 rounded-md text-slate-600 hover:text-slate-900">Examen</button>
+              <button onclick="setAppMode('desafio')" id="btn-mode-desafio" class="mode-toggle-btn px-2.5 py-1 rounded-md text-slate-600 hover:text-slate-900">Desafío</button>
+            </div>
+            <button onclick="lanzarCasoSorpresa()" class="px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 transition">
+              <i data-lucide="dice-5" class="w-4 h-4"></i> Caso Sorpresa
+            </button>
+          </div>
+        </div>
+
+        <!-- Filtros de Casos -->
+        <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-xs font-bold text-slate-500">Especie:</span>
+            <div id="species-filter-buttons" class="flex flex-wrap gap-1.5"></div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-slate-500">Dificultad:</span>
+            <select id="case-difficulty-filter" onchange="filtrarCasosPorDificultad(this.value)" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 font-medium text-slate-700">
+              <option value="todos">Todas</option>
+              <option value="Básico">🟢 Básico</option>
+              <option value="Intermedio">🟡 Intermedio</option>
+              <option value="Avanzado">🔴 Avanzado</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contenedor del simulador activo inyectado via JS -->
+      <div id="case-active-container"></div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VISTA 6: PROGRESO                          -->
+    <!-- ========================================== -->
+    <section id="view-progreso" class="view-panel hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <i data-lucide="bar-chart-2" class="w-6 h-6 text-vet-600"></i> Mi Progreso Académico
+          </h2>
+          <p class="text-sm text-slate-600">Seguimiento de desempeño clínico y precisión por especie.</p>
+        </div>
+        <button onclick="generarReporteModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs transition flex items-center gap-2 shadow-sm">
+          <i data-lucide="file-text" class="w-4 h-4"></i> Generar Mi Reporte
+        </button>
+      </div>
+
+      <!-- Tarjetas de KPIs -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+          <span class="text-xs font-bold text-slate-400 uppercase">Casos Realizados</span>
+          <div class="mt-2 flex items-baseline justify-between">
+            <span id="kpi-casos-totales" class="text-3xl font-extrabold text-slate-800">0</span>
+            <span id="kpi-casos-universo" class="text-xs text-slate-500">de 0</span>
+          </div>
+          <div class="mt-2 w-full bg-slate-100 rounded-full h-1.5">
+            <div id="bar-casos-pct" class="bg-vet-500 h-1.5 rounded-full" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+          <span class="text-xs font-bold text-slate-400 uppercase">Tasa de Aciertos</span>
+          <div class="mt-2 flex items-baseline justify-between">
+            <span id="kpi-aciertos-pct" class="text-3xl font-extrabold text-vet-600">0%</span>
+            <span id="kpi-aciertos-conteo" class="text-xs text-slate-500">0 aciertos</span>
+          </div>
+          <div class="mt-2 w-full bg-slate-100 rounded-full h-1.5">
+            <div id="bar-aciertos-pct" class="bg-emerald-500 h-1.5 rounded-full" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+          <span class="text-xs font-bold text-slate-400 uppercase">Puntos Acumulados</span>
+          <div class="mt-2 flex items-baseline justify-between">
+            <span id="kpi-puntos" class="text-3xl font-extrabold text-amber-600">0</span>
+            <span class="text-xs text-slate-500">Pts</span>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+          <span class="text-xs font-bold text-slate-400 uppercase">Pistas Solicitadas</span>
+          <div class="mt-2 flex items-baseline justify-between">
+            <span id="kpi-pistas" class="text-3xl font-extrabold text-blue-600">0</span>
+            <span class="text-xs text-slate-500">veces</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progreso de Examen y Repaso -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-2xl p-6 border border-blue-200 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-base text-slate-800 flex items-center gap-2">
+              <i data-lucide="graduation-cap" class="w-4 h-4 text-clinical-600"></i> Progreso de Examen
+            </h3>
+            <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">Aprobación ≥70%</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
+            <div class="p-3 rounded-xl bg-slate-50 border"><span class="block text-[10px] uppercase font-bold text-slate-400">Intentos</span><strong id="exam-attempts" class="text-xl">0</strong></div>
+            <div class="p-3 rounded-xl bg-slate-50 border"><span class="block text-[10px] uppercase font-bold text-slate-400">Última</span><strong id="exam-last" class="text-xl">—</strong></div>
+            <div class="p-3 rounded-xl bg-slate-50 border"><span class="block text-[10px] uppercase font-bold text-slate-400">Mejor</span><strong id="exam-best" class="text-xl text-vet-600">—</strong></div>
+            <div class="p-3 rounded-xl bg-slate-50 border"><span class="block text-[10px] uppercase font-bold text-slate-400">Promedio</span><strong id="exam-average" class="text-xl">—</strong></div>
+            <div class="p-3 rounded-xl bg-slate-50 border"><span class="block text-[10px] uppercase font-bold text-slate-400">Aprobados</span><strong id="exam-passed" class="text-xl text-clinical-700">0</strong></div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 border border-purple-200 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-base text-slate-800 flex items-center gap-2">
+              <i data-lucide="brain" class="w-4 h-4 text-purple-600"></i> Progreso de Repaso Rápido
+            </h3>
+            <span id="review-bank-size" class="text-[10px] font-bold px-2 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-200">0 preguntas</span>
+          </div>
+          <div class="grid grid-cols-3 gap-3 text-center mb-4">
+            <div class="p-3 rounded-xl bg-slate-50 border"><span class="block text-[10px] uppercase font-bold text-slate-400">Respondidas</span><strong id="review-total" class="text-xl">0</strong></div>
+            <div class="p-3 rounded-xl bg-slate-50 border"><span class="block text-[10px] uppercase font-bold text-slate-400">Correctas</span><strong id="review-correct" class="text-xl text-vet-600">0</strong></div>
+            <div class="p-3 rounded-xl bg-slate-50 border"><span class="block text-[10px] uppercase font-bold text-slate-400">Acierto</span><strong id="review-pct" class="text-xl text-purple-700">—</strong></div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <p class="text-[10px] font-bold uppercase text-slate-400 mb-2">Por mineral</p>
+              <div id="review-by-mineral" class="space-y-2"></div>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold uppercase text-slate-400 mb-2">Por categoría</p>
+              <div id="review-by-category" class="space-y-2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desglose y Áreas de Mejora -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <h3 class="font-bold text-base text-slate-800 mb-4 flex items-center gap-2">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-slate-500"></i> Desempeño por Especie
+          </h3>
+          <div id="species-progress-bars" class="space-y-3.5"></div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 class="font-bold text-base text-slate-800 mb-2 flex items-center gap-2">
+              <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500"></i> 🧠 Áreas de Repaso
+            </h3>
+            <p class="text-xs text-slate-500 mb-4">Calculado según tus errores:</p>
+            <div id="weak-areas-container" class="space-y-2"></div>
+          </div>
+          <button onclick="confirmarReinicio()" class="mt-6 w-full py-2 text-xs font-semibold text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 rounded-lg transition border border-rose-200">
+            Reiniciar historial
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODALES Y POPUPS (Sustituyen Alert/Confirm)-->
+  <!-- ========================================== -->
+  
+  
+  <!-- Modal Ficha Mineral -->
+  <div id="mineral-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-slate-200">
+      <div class="p-6 bg-slate-900 text-white flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div id="mineral-modal-symbol" class="w-12 h-12 rounded-2xl bg-vet-600 flex items-center justify-center font-black text-2xl mono">Ca</div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 id="mineral-modal-name" class="text-2xl font-bold">Calcio</h3>
+              <span id="mineral-modal-class" class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-emerald-300 font-semibold border border-slate-700">Macro</span>
+            </div>
+            <p id="mineral-modal-species" class="text-xs text-slate-300 mt-0.5"></p>
+          </div>
+        </div>
+        <button onclick="cerrarMineralModal()" class="p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="mineral-modal-body" class="p-6 overflow-y-auto space-y-5 text-slate-700 text-sm"></div>
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+        <span class="text-xs text-slate-400 font-medium flex items-center gap-1">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i> Fuente indexada
+        </span>
+        <button onclick="cerrarMineralModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-white text-xs font-bold hover:bg-slate-900 transition">Cerrar ficha</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Feedback Animado (Drama/Éxito) -->
+  <div id="feedback-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-slate-200 animate-in fade-in duration-200">
+      <div id="feedback-modal-content" class="p-6 text-center space-y-4"></div>
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+        <button id="feedback-modal-next-btn" onclick="cerrarFeedbackModal()" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition">Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Confirmación Reinicio -->
+  <div id="confirm-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl border border-slate-200">
+      <div class="w-16 h-16 mx-auto rounded-full bg-rose-100 flex items-center justify-center mb-4">
+        <i data-lucide="alert-triangle" class="w-8 h-8 text-rose-600"></i>
+      </div>
+      <h3 class="text-lg font-bold text-slate-800 mb-2">¿Reiniciar Historial?</h3>
+      <p class="text-sm text-slate-600 mb-6">Se perderán todos los puntos, casos resueltos y estadísticas acumuladas. Esta acción no se puede deshacer.</p>
+      <div class="flex justify-center gap-3">
+        <button onclick="cancelarReinicio()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition">Cancelar</button>
+        <button onclick="ejecutarReinicio()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm transition">Sí, reiniciar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Reporte -->
+  <div id="report-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-slate-200">
+      <div class="p-6 bg-slate-900 text-white flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="clipboard-check" class="w-6 h-6 text-emerald-400"></i>
+          <div><h3 class="text-xl font-bold">📋 Mi Reporte</h3><p class="text-xs text-slate-300">Resumen integral</p></div>
+        </div>
+        <button onclick="cerrarReporteModal()" class="p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div id="report-modal-body" class="p-6 overflow-y-auto space-y-4 text-sm text-slate-700"></div>
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+        <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition flex items-center gap-1.5"><i data-lucide="printer" class="w-4 h-4"></i> Guardar PDF</button>
+        <button onclick="cerrarReporteModal()" class="px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition">Listo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- LÓGICA JAVASCRIPT & DATOS                  -->
+  <!-- ========================================== -->
+  <script>
+    const PRESENTACION_MINERALES = {
+      autor: "Corona Gochi, L.", ano: "2026", titulo: "Minerales 2026-2: Características nutricias, sensoriales y limitantes de los complementos minerales", revista: "Presentación de curso (fuente principal)"
+    };
+
+    const MINERALES_DATA = [
+      {
+        id: "calcio", nombre: "Calcio", simbolo: "Ca", clasificacion: "Macromineral", isDemo: true,
+        funciones: "Formación de matriz ósea (hidroxiapatita), contracción muscular, transmisión sináptica y cascada de coagulación.",
+        fuentes: "Carbonato de calcio, fosfato dicálcico, harina de conchuela, forrajes de leguminosas (alfalfa).",
+        absorcion: "Duodeno y yeyuno (transporte activo mediado por calbindina y Vitamina D3).",
+        interacciones: "Fósforo (relación ideal 2:1 a 1.5:1), Vitamina D3, fitatos (disminuyen absorción).",
+        deficiencia: "Paresia puerperal (Fiebre de leche) en vacas, eclampsia en perras, raquitismo, osteomalacia.",
+        signosDeficiencia: "Temblores, postración flácida, taquicardia apagada, tetania en carnívoros, cáscaras delgadas.",
+        toxicidad: "Calcificación metastásica tisular, urolitiasis, interferencia competitiva con Zn y Cu.",
+        signosToxicidad: "Depresión del consumo, calcificación renal/aórtica, osteopetrosis.",
+        diagnostico: "Calcio iónico y total sérico, PTH sérica.",
+        tratamiento: "Infusión intravenosa lenta de borogluconato de calcio al 23%.",
+        claveRecordar: "🧠 'El Ca contrae el músculo y calcifica el hueso; sin él, la vaca colapsa (fiebre de leche) y la perra lactante convulsiona'.",
+        especies: ["Bovinos", "Perros", "Aves", "Gatos", "Equinos", "Ovinos", "Caprinos", "Porcinos"],
+        fuente: { autor: "Goff, J. P.", ano: "2008", titulo: "Prevention and treatment of milk fever", revista: "The Vet Journal" }
+      },
+      {
+        id: "fosforo", nombre: "Fósforo", simbolo: "P", clasificacion: "Macromineral", isDemo: true,
+        funciones: "Estructura ósea, ATP celular, fosfolípidos, síntesis de ADN/ARN y amortiguador ruminal.",
+        fuentes: "Fosfato monocálcico, salvado de trigo, harinas de oleaginosas.",
+        absorcion: "Yeyuno (cotransporte Na-P dependiente de Vitamina D3).",
+        interacciones: "Calcio, Aluminio y Hierro (forman quelatos insolubles).",
+        deficiencia: "Pica o malacia, anestro, raquitismo, hemoglobinuria posparto.",
+        signosDeficiencia: "Alotriofagia (masticar piedras/madera), emaciación, rigidez articular, baja fertilidad.",
+        toxicidad: "Osteodistrofia fibrosa (Enfermedad de la cabeza grande en equinos), urolitiasis (estruvita).",
+        signosToxicidad: "Agrandamiento óseo de maxilares, obstrucción uretral.",
+        diagnostico: "Fósforo inorgánico sérico, relación Ca:P.",
+        tratamiento: "Corrección dietética (relación Ca:P).",
+        claveRecordar: "🧠 'El P da energía; si falta, la vaca come piedras (pica) y no cicla; si sobra en el salvado, deforma la cara del caballo'.",
+        especies: ["Bovinos", "Equinos", "Ovinos", "Caprinos", "Perros", "Gatos"],
+        fuente: { autor: "NRC", ano: "2001", titulo: "Nutrient Requirements of Dairy Cattle", revista: "National Academies" }
+      },
+      {
+        id: "magnesio", nombre: "Magnesio", simbolo: "Mg", clasificacion: "Macromineral", isDemo: true,
+        funciones: "Cofactor de >300 reacciones (uso de ATP), excitabilidad neuromuscular (antagonista del calcio), termorregulación.",
+        fuentes: "Óxido de magnesio, sulfato de magnesio, forrajes verdes.",
+        absorcion: "Pared ruminal (transporte activo) en rumiantes. Íleon y colon en monogástricos.",
+        interacciones: "Potasio (K) y Nitrógeno (N) en rumen (exceso de K bloquea absorción de Mg).",
+        deficiencia: "Tetania de los pastos (hipomagnesemia).",
+        signosDeficiencia: "Hipersensibilidad, marcha espástica ('paso de ganso'), convulsiones clónicas, nistagmo, muerte súbita.",
+        toxicidad: "Diarrea osmótica, depresión cardiorrespiratoria por vía IV.",
+        signosToxicidad: "Diarrea, hipotensión, debilidad.",
+        diagnostico: "Magnesio sérico y en líquido cefalorraquídeo/humor vítreo postmortem.",
+        tratamiento: "Gluconato de Ca+Mg+P intravenoso lento, seguido de Mg subcutáneo/oral.",
+        claveRecordar: "🧠 'El Mg calma al nervio; si el potasio del pasto joven lo frena, la vaca convulsiona violentamente'.",
+        especies: ["Bovinos", "Ovinos", "Caprinos"],
+        fuente: { autor: "Martens & Schweigel", ano: "2000", titulo: "Pathophysiology of ruminant magnesium metabolism", revista: "Vet Clinics" }
+      },
+      {
+        id: "cobre", nombre: "Cobre", simbolo: "Cu", clasificacion: "Micromineral", isDemo: true,
+        funciones: "Cofactor enzimático (ceruloplasmina, citocromo c oxidasa, tirosinasa, lisil oxidasa).",
+        fuentes: "Sulfato de cobre, cobre orgánico.",
+        absorcion: "Intestino delgado proximal (CTR1).",
+        interacciones: "Complejo Tiomolibdato: Cu ↔ Mo ↔ S (secuestro ruminal). Antagonismo con Zn y Fe.",
+        deficiencia: "Acrotriquia, ataxia enzoótica ('swayback' en corderos), rotura aórtica.",
+        signosDeficiencia: "Pelo descolorido ('anteojos' en bovinos), debilidad tren posterior neonatal, diarrea.",
+        toxicidad: "Crisis hemolítica aguda en ovinos; toxicosis hepática en caninos (Bedlington Terrier).",
+        signosToxicidad: "Ictericia intensa, hemoglobinuria ('orina vino tinto'), riñones bronce.",
+        diagnostico: "Cobre hepático (biopsia), ceruloplasmina.",
+        tratamiento: "En ovinos tóxicos: Molibdato y tiosulfato. Deficiencia: quelatos de Cu.",
+        claveRecordar: "🧠 'El ovino guarda el cobre en hígado hasta estallar en orina negra. Si sobra Mo+S, falta cobre y el pelo se destiñe'.",
+        especies: ["Ovinos", "Bovinos", "Caprinos", "Perros", "Porcinos"],
+        fuente: { autor: "Suttle", ano: "2010", titulo: "Mineral Nutrition of Livestock", revista: "CABI" }
+      },
+      {
+        id: "selenio", nombre: "Selenio", simbolo: "Se", clasificacion: "Micromineral", isDemo: true,
+        funciones: "Glutatión peroxidasa (GPx) - detoxifica peróxidos; hormonas tiroideas.",
+        fuentes: "Selenito de sodio, levaduras con selenometionina.",
+        absorcion: "Duodeno y yeyuno.",
+        interacciones: "Sinergia con Vitamina E (doble barrera antioxidante).",
+        deficiencia: "Enfermedad del músculo blanco (miopatía nutricional).",
+        signosDeficiencia: "Rigidez muscular, decúbito, taquipnea, estrías blanquecinas en miocardio (postmortem).",
+        toxicidad: "Enfermedad de los álcalis por plantas seleníferas (Astragalus).",
+        signosToxicidad: "Alopecia en crines y cola (equinos), grietas en pezuñas, olor a ajo.",
+        diagnostico: "Actividad GPx eritrocitaria.",
+        tratamiento: "Inyección de Se + Vitamina E a dosis precisas.",
+        claveRecordar: "🧠 'Se + Vitamina E = escudo del músculo. Si falta, el corazón parece cocido (blanco); si sobra crónicamente, el caballo pierde la crin'.",
+        especies: ["Bovinos", "Ovinos", "Equinos", "Caprinos", "Aves"],
+        fuente: { autor: "Underwood & Suttle", ano: "1999", titulo: "The Mineral Nutrition", revista: "CABI" }
+      },
+      {
+        id: "zinc", nombre: "Zinc", simbolo: "Zn", clasificacion: "Micromineral", isDemo: true,
+        funciones: "Metaloenzimas, queratinización, cicatrización, inmunidad celular.",
+        fuentes: "Óxido de zinc, zinc quelatado.",
+        absorcion: "Yeyuno (ZIP4).",
+        interacciones: "Exceso de Ca y fitatos bloquean su absorción (paraqueratosis). Competencia con Cu.",
+        deficiencia: "Paraqueratosis porcina, dermatosis responsiva a zinc en Husky.",
+        signosDeficiencia: "Costras gruesas simétricas, alopecia, hiperqueratosis plantar.",
+        toxicidad: "Ingestión de monedas o metales galvanizados en perros.",
+        signosToxicidad: "Anemia hemolítica intravascular aguda.",
+        diagnostico: "Zinc sérico, biopsia cutánea (hiperqueratosis paraqueratósica).",
+        tratamiento: "Suspender exceso de calcio; sulfato de zinc oral.",
+        claveRecordar: "🧠 'El zinc protege la piel. Mucho calcio y fitatos lo secuestran, provocando costras gruesas (paraqueratosis)'.",
+        especies: ["Porcinos", "Perros", "Bovinos", "Aves"],
+        fuente: { autor: "Hensel", ano: "2010", titulo: "Nutrition and skin diseases", revista: "Clinics in Derm" }
+      },
+      {
+        id: "hierro", nombre: "Hierro", simbolo: "Fe", clasificacion: "Micromineral", isDemo: true,
+        funciones: "Hemoglobina, mioglobina, citocromos.",
+        fuentes: "Sulfato ferroso, hierro dextrano inyectable.",
+        absorcion: "Duodeno (DMT1).",
+        interacciones: "Requiere Cu (ceruloplasmina) para oxidarse y transportarse.",
+        deficiencia: "Anemia ferropénica hipocrómica microcítica en lechones confinamiento.",
+        signosDeficiencia: "Palidez extrema de mucosas, disnea ('thumps'), letargo.",
+        toxicidad: "Hepatotoxicidad por sobredosis inyectable.",
+        signosToxicidad: "Shock anafilactoide, muerte aguda en neonatos.",
+        diagnostico: "Hematocrito, Hemoglobina, VCM bajo.",
+        tratamiento: "Inyección IM de hierro dextrano en los primeros 3 días de vida.",
+        claveRecordar: "🧠 'La leche materna no tiene hierro; si el lechón no toca tierra ni recibe inyección, muere anémico y blanco'.",
+        especies: ["Porcinos", "Perros", "Gatos", "Ovinos", "Caprinos"],
+        fuente: { autor: "Bhattarai", ano: "2015", titulo: "Hematological status at weaning", revista: "JSHAP" }
+      },
+      {
+        id: "yodo", nombre: "Yodo", simbolo: "I", clasificacion: "Micromineral", isDemo: true,
+        funciones: "Síntesis de hormonas tiroideas (T3 y T4).",
+        fuentes: "Yodato de calcio, sal yodada, kelp.",
+        absorcion: "Rumen/estómago e intestino.",
+        interacciones: "Glucosinolatos (plantas bociógenas) bloquean su captación.",
+        deficiencia: "Bocio congénito o hipotiroidismo primario neonatal.",
+        signosDeficiencia: "Crías débiles o muertas, alopecia fetal, hipertrofia de tiroides (cuello abultado), hipotermia.",
+        toxicidad: "Yodismo, asociado a hipertiroidismo felino inducido dietéticamente.",
+        signosToxicidad: "Lagrimeo, tos, pérdida de peso con polifagia (gatos).",
+        diagnostico: "T4 sérica, tamaño tiroideo.",
+        tratamiento: "Sal mineralizada yodada a gestantes.",
+        claveRecordar: "🧠 'Sin yodo en la madre, la cría nace sin pelo y con el cuello abultado (bocio congénito)'.",
+        especies: ["Caprinos", "Ovinos", "Bovinos", "Gatos"],
+        fuente: { autor: "Knowles & Grace", ano: "2007", titulo: "Iodine nutrition in ruminants", revista: "NZ Vet J" }
+      }
+    ];
+
+    const INTERACCIONES_DATA = [
+      {
+        id: "ca-p-vitd", titulo: "Ca ↔ P ↔ Vitamina D3", tipo: "Regulador Fisiológico",
+        mecanismo: "Exceso de P precipita con el Ca impidiendo absorción de ambos, estimulando la PTH que desmineraliza el hueso.",
+        consecuencia: "Osteodistrofia fibrosa, hiperparatiroidismo nutricional secundario.",
+        especies: ["Equinos", "Perros", "Aves", "Reptiles"], implicacion: "Dietas altas en salvado o carne pura deforman los huesos.",
+        fuente: "Merck Vet Manual (2020)"
+      },
+      {
+        id: "cu-mo-s", titulo: "Cu ↔ Mo ↔ S (Tiomolibdatos)", tipo: "Antagonismo Químico Ruminal",
+        mecanismo: "El Molibdeno y Azufre forman tiomolibdatos en el rumen que secuestran irreversiblemente el Cobre.",
+        consecuencia: "Hipocuprosis secundaria (deficiencia clínica con dieta aparentemente normal en Cu).",
+        especies: ["Bovinos", "Ovinos", "Caprinos"], implicacion: "Diarreas crónicas y despigmentación ('anteojos') en pastizales sulfatados.",
+        fuente: "Suttle, N. F. (2010)"
+      },
+      {
+        id: "zn-cu", titulo: "Zn ↔ Cu (Metalotioneínas)", tipo: "Antagonismo de Absorción",
+        mecanismo: "El exceso de Zn estimula metalotioneínas en la mucosa, las cuales atrapan el Cu y evitan que llegue a la sangre.",
+        consecuencia: "Hipocuprosis secundaria por sobredosis de Zn.",
+        especies: ["Perros", "Porcinos"], implicacion: "Útil como tratamiento médico en perros con acumulación tóxica de Cu hepático.",
+        fuente: "Twedt, D. C. (2014)"
+      },
+      {
+        id: "se-vite", titulo: "Se ↔ Vitamina E (Sinergia)", tipo: "Sinergia Antioxidante",
+        mecanismo: "El Se (enzima GPx) protege citosol; la Vit E protege lípidos de membrana de peróxidos.",
+        consecuencia: "Defensa mitocondrial completa.",
+        especies: ["Rumiantes", "Equinos", "Aves"], implicacion: "Prevención obligatoria de Músculo Blanco con dosis inyectables combinadas.",
+        fuente: "Underwood & Suttle (1999)"
+      }
+    ];
+
+    function distractoresMineral(mineralActual, campo, n = 3) {
+      return shuffleArray(
+        MINERALES_DATA
+          .filter(m => m.id !== mineralActual.id && m[campo])
+          .map(m => ({ texto: m[campo], correcta: false, feedback: `Esta opción corresponde principalmente a ${m.nombre}, no a ${mineralActual.nombre}.` }))
+      ).slice(0, n);
+    }
+
+    function opcionesCampoMineral(mineral, campo, feedbackCorrecto) {
+      return shuffleArray([
+        { texto: mineral[campo], correcta: true, feedback: feedbackCorrecto },
+        ...distractoresMineral(mineral, campo, 3)
+      ]);
+    }
+
+    function generarBancoRepaso() {
+      const banco = [];
+      MINERALES_DATA.forEach(m => {
+        const clasesAlternativas = ["Macromineral", "Micromineral", "Electrolito"].filter(x => x !== m.clasificacion);
+        banco.push({
+          id:`rep-${m.id}-identificacion`, mineral:m.id, mineralNombre:m.nombre, tipo:"identificacion", titulo:`${m.nombre}: clasificación`,
+          enunciado:`¿Cómo se clasifica nutricionalmente el ${m.nombre} (${m.simbolo})?`,
+          opciones: shuffleArray([
+            {texto:m.clasificacion, correcta:true, feedback:`Correcto. ${m.nombre} se clasifica como ${m.clasificacion}.`},
+            ...clasesAlternativas.map(x=>({texto:x, correcta:false, feedback:`No. ${m.nombre} está registrado en la ficha como ${m.clasificacion}.`}))
+          ])
+        });
+        banco.push({
+          id:`rep-${m.id}-funcion`, mineral:m.id, mineralNombre:m.nombre, tipo:"funcion", titulo:`${m.nombre}: función`,
+          enunciado:`¿Cuál de las siguientes opciones describe mejor una función del ${m.nombre}?`,
+          opciones: opcionesCampoMineral(m,"funciones",`Correcto. Esta es una función descrita en la ficha de ${m.nombre}.`)
+        });
+        banco.push({
+          id:`rep-${m.id}-fuentes`, mineral:m.id, mineralNombre:m.nombre, tipo:"fuentes", titulo:`${m.nombre}: fuentes`,
+          enunciado:`¿Cuál opción corresponde a fuentes del ${m.nombre}?`,
+          opciones: opcionesCampoMineral(m,"fuentes",`Correcto. Estas fuentes corresponden al ${m.nombre}.`)
+        });
+        banco.push({
+          id:`rep-${m.id}-absorcion`, mineral:m.id, mineralNombre:m.nombre, tipo:"absorcion", titulo:`${m.nombre}: absorción`,
+          enunciado:`¿Qué descripción de absorción/biodisponibilidad corresponde al ${m.nombre}?`,
+          opciones: opcionesCampoMineral(m,"absorcion",`Correcto. Esta es la información de absorción asociada al ${m.nombre}.`)
+        });
+        banco.push({
+          id:`rep-${m.id}-deficiencia`, mineral:m.id, mineralNombre:m.nombre, tipo:"deficiencia", titulo:`${m.nombre}: deficiencia`,
+          enunciado:`¿Qué cuadro se asocia con deficiencia de ${m.nombre}?`,
+          opciones: opcionesCampoMineral(m,"deficiencia",`Correcto. Este cuadro está descrito para deficiencia de ${m.nombre}.`)
+        });
+        banco.push({
+          id:`rep-${m.id}-toxicidad`, mineral:m.id, mineralNombre:m.nombre, tipo:"toxicidad", titulo:`${m.nombre}: toxicidad`,
+          enunciado:`¿Qué problema se asocia con exceso o toxicidad de ${m.nombre}?`,
+          opciones: opcionesCampoMineral(m,"toxicidad",`Correcto. Este efecto está descrito para exceso/toxicidad de ${m.nombre}.`)
+        });
+        banco.push({
+          id:`rep-${m.id}-interacciones`, mineral:m.id, mineralNombre:m.nombre, tipo:"interacciones", titulo:`${m.nombre}: interacciones`,
+          enunciado:`¿Cuál interacción nutricional corresponde al ${m.nombre}?`,
+          opciones: opcionesCampoMineral(m,"interacciones",`Correcto. Esta interacción corresponde al ${m.nombre}.`)
+        });
+        banco.push({
+          id:`rep-${m.id}-diagnostico`, mineral:m.id, mineralNombre:m.nombre, tipo:"diagnostico", titulo:`${m.nombre}: diagnóstico`,
+          enunciado:`¿Qué herramienta diagnóstica es pertinente para valorar alteraciones del ${m.nombre}?`,
+          opciones: opcionesCampoMineral(m,"diagnostico",`Correcto. Esta herramienta diagnóstica se incluye en la ficha de ${m.nombre}.`)
+        });
+      });
+      return banco;
+    }
+
+    const REPASO_DATA = generarBancoRepaso();
+
+    const CASOS_DATA = [
+      // 2 BOVINOS
+      {
+        id: "bov-1", categoria: "Producción Animal", especie: "Bovinos", icono: "🐄", dificultad: "Intermedio",
+        titulo: "Vaca lechera postrada a 24 horas del parto",
+        historia: { edad: "5 años", sexo: "Hembra", raza: "Holstein", sistema: "Estabulación libre", alimentacion: "TMR preparto rica en alfalfa", etapa: "Puerperio (24 h)", signos: "Decúbito esternal, cabeza en el flanco (en 'S'). Hipotermia (36.8°C), ruidos cardíacos apagados, parálisis flácida sin reflejos.", evolucion: "Colapso tras temblores finos en fase temprana." },
+        decisiones: {
+          diagnostico: {
+            pregunta: "¿Diagnóstico clínico principal?", correcta: "d2",
+            opciones: [
+              { id: "d1", texto: "Hipomagnesemia aguda", explicacion: "La hipomagnesemia cursa con tetania violenta y agresividad, no parálisis flácida hipotérmica." },
+              { id: "d2", texto: "Paresia puerperal hipocalcémica (Fiebre de leche)", explicacion: "El drenaje de Ca al calostro sin adaptación de PTH causa falla neuromuscular flácida y cardíaca." },
+              { id: "d3", texto: "Mastitis hiperaguda", explicacion: "Cursa con ubre dura/fétida y toxemia severa." }
+            ]
+          },
+          tratamiento: {
+            pregunta: "¿Terapia de urgencia?", correcta: "t1",
+            opciones: [
+              { id: "t1", texto: "Infusión IV lenta de borogluconato de Ca (23%) monitoreando corazón", explicacion: "Revierte la parálisis; la lentitud evita paro cardíaco por cardiotoxicidad." },
+              { id: "t2", texto: "Glucosa hipertónica IV rápida", explicacion: "No soluciona el déficit electrolítico." },
+              { id: "t3", texto: "Drenaje completo de ubre (ordeño)", explicacion: "Agrava el vaciamiento de calcio." }
+            ]
+          },
+          prevencion: {
+            pregunta: "¿Estrategia nutricional preparto?", correcta: "p1",
+            opciones: [
+              { id: "p1", texto: "Dietas preparto con DCAD negativo (sales aniónicas)", explicacion: "La acidosis metabólica leve sensibiliza receptores de PTH y estimula resorción ósea preventiva." },
+              { id: "p2", texto: "Dar masivo carbonato de calcio preparto", explicacion: "Grave error: apaga la PTH y empeora la fiebre de leche." },
+              { id: "p3", texto: "Ayuno preparto", explicacion: "Provoca cetosis y desplazamiento de abomaso." }
+            ]
+          }
+        },
+        pistas: ["Fíjate en el tiempo exacto postparto.", "El músculo no puede contraerse por falta de un macromineral.", "La prevención requiere acidificar la sangre levemente."],
+        fuentes: [{ autor: "Goff, J.", ano: "2008", titulo: "Prevention of milk fever", revista: "The Vet Journal" }]
+      },
+      {
+        id: "bov-2", categoria: "Producción Animal", especie: "Bovinos", icono: "🐄", dificultad: "Avanzado",
+        titulo: "Convulsiones en rebrote de primavera",
+        historia: { edad: "4 años", sexo: "Hembras", raza: "Angus", sistema: "Pastoreo", alimentacion: "Rebrote tierno fertilizado con N y K", etapa: "Lactancia temprana", signos: "Hipersensibilidad, marcha espástica ('paso de ganso'), opistótonos, nistagmo, colapso convulsivo y muerte súbita.", evolucion: "Hiperagudo, <2 hrs." },
+        decisiones: {
+          diagnostico: {
+            pregunta: "¿Diagnóstico fisiopatológico?", correcta: "d2",
+            opciones: [
+              { id: "d1", texto: "Rabia paralítica", explicacion: "Dura días, con parálisis ascendente, no hiperagudo convulsivo." },
+              { id: "d2", texto: "Tetania de los pastos (Hipomagnesemia)", explicacion: "El K y N del pasto bloquean la absorción de Mg en rumen, desatando descargas neuromusculares tetánicas." },
+              { id: "d3", texto: "Polioencefalomalacia", explicacion: "Común en dietas altas en grano (feedlot), no pastura fresca." }
+            ]
+          },
+          tratamiento: {
+            pregunta: "¿Tratamiento médico?", correcta: "t2",
+            opciones: [
+              { id: "t1", texto: "Mg puro IV rápido", explicacion: "Mortal: causa paro cardíaco fulminante." },
+              { id: "t2", texto: "Ca+Mg+P IV lento y Sulfato de Mg SC", explicacion: "El Ca protege el corazón durante la infusión IV; la vía SC da efecto sostenido." },
+              { id: "t3", texto: "Xilacina intramuscular", explicacion: "Deprime más al paciente sin resolver el déficit mineral." }
+            ]
+          },
+          prevencion: {
+            pregunta: "¿Corrección de manejo?", correcta: "p2",
+            opciones: [
+              { id: "p1", texto: "Más fertilización potásica", explicacion: "Aumentaría la toxicidad." },
+              { id: "p2", texto: "Suplementar Óxido de Magnesio diario", explicacion: "Fuerza gradiente pasivo en rumen venciendo el bloqueo del K." },
+              { id: "p3", texto: "Antibióticos en agua", explicacion: "Sin utilidad metabólica." }
+            ]
+          }
+        },
+        pistas: ["Revisa el exceso de Potasio (K) en el fertilizante.", "Afecta el equilibrio excitatorio del nervio.", "El tratamiento intravenoso directo de este mineral puro es peligroso."],
+        fuentes: [{ autor: "Martens", ano: "2000", titulo: "Ruminant magnesium metabolism", revista: "Vet Clinics" }]
+      },
+
+      // 2 OVINOS
+      {
+        id: "ovi-1", categoria: "Producción Animal", especie: "Ovinos", icono: "🐑", dificultad: "Avanzado",
+        titulo: "Orina café tras manejo estresante",
+        historia: { edad: "8 meses", sexo: "Machos", raza: "Katahdin", sistema: "Engorda", alimentacion: "Dieta para toros de engorda", etapa: "Finalización", signos: "Orina oscura ('vino tinto'), ictericia de porcelana masiva. Necropsia: Riñones color bronce / pólvora, hígado naranja.", evolucion: "Muerte fulminante post-esquila." },
+        decisiones: {
+          diagnostico: {
+            pregunta: "¿Tóxico o deficiencia?", correcta: "d1",
+            opciones: [
+              { id: "d1", texto: "Toxicosis crónica por Cobre (crisis aguda)", explicacion: "La dieta de bovinos aportó exceso de Cu; el ovino lo acumula silente hasta que el estrés dispara hemólisis masiva." },
+              { id: "d2", texto: "Babesiosis", explicacion: "No encaja con dieta de toros y estabulación." },
+              { id: "d3", texto: "Intoxicación por Plomo", explicacion: "Causa signos neurológicos, no riñones pólvora ni hemólisis." }
+            ]
+          },
+          tratamiento: {
+            pregunta: "¿Qué antídoto usar?", correcta: "t1",
+            opciones: [
+              { id: "t1", texto: "Molibdato de amonio + Tiosulfato sódico", explicacion: "Forman tiomolibdatos que quelan el Cu libre y lo excretan." },
+              { id: "t2", texto: "Hierro dextrano", explicacion: "Potencia el daño oxidativo renal." },
+              { id: "t3", texto: "Vitamina K", explicacion: "No frena la hemólisis por metales pesados." }
+            ]
+          },
+          prevencion: {
+            pregunta: "¿Prevención nutricional?", correcta: "p3",
+            opciones: [
+              { id: "p1", texto: "Dar 60 ppm de Cobre como en bovinos", explicacion: "Letal para los ovinos." },
+              { id: "p2", texto: "Quitar todo el Molibdeno", explicacion: "El Mo es el freno del Cu; si lo quitas, se intoxican más rápido." },
+              { id: "p3", texto: "Usar solo premezcla ovina (Cu<10ppm) con Mo equilibrado", explicacion: "Respeta el límite de tolerancia fisiológica estricta del ovino." }
+            ]
+          }
+        },
+        pistas: ["La dieta de toros tiene 4 veces más de este metal que lo que tolera el borrego.", "La orina negra indica hemólisis intravascular.", "El antídoto requiere el mineral antagónico."],
+        fuentes: [{ autor: "Suttle", ano: "2010", titulo: "Copper toxicosis in sheep", revista: "Vet Record" }]
+      },
+      {
+        id: "ovi-2", categoria: "Producción Animal", especie: "Ovinos", icono: "🐑", dificultad: "Básico",
+        titulo: "Corderos con miocardiopatía y músculos pálidos",
+        historia: { edad: "3 sem", sexo: "Mixto", raza: "Suffolk", sistema: "Semi-intensivo", alimentacion: "Leche", etapa: "Lactancia", signos: "Marcha rígida ('patas tiesas'), taquipnea súbita y muerte. Necropsia: Músculo esquelético cocido y estrías de tiza en corazón.", evolucion: "Aparición progresiva." },
+        decisiones: {
+          diagnostico: {
+            pregunta: "¿Qué patología es?", correcta: "d3",
+            opciones: [
+              { id: "d1", texto: "Tétanos", explicacion: "Habría prolapso del tercer párpado y rigidez en caballete." },
+              { id: "d2", texto: "Hipocalcemia", explicacion: "No causa necrosis muscular macroscópica." },
+              { id: "d3", texto: "Músculo blanco (Deficiencia de Se/Vit E)", explicacion: "Falla antioxidante (GPx) que destruye el miocardio." }
+            ]
+          },
+          tratamiento: {
+            pregunta: "¿Tratamiento inmediato?", correcta: "t1",
+            opciones: [
+              { id: "t1", texto: "Inyección de Selenito de Sodio + Vit E", explicacion: "Restaura la enzima GPx y frena necrosis." },
+              { id: "t2", texto: "Penicilina", explicacion: "No es bacteriano." },
+              { id: "t3", texto: "Gluconato de calcio", explicacion: "No corrige daño oxidativo celular." }
+            ]
+          },
+          prevencion: {
+            pregunta: "¿Cómo proteger a las crías?", correcta: "p2",
+            opciones: [
+              { id: "p1", texto: "Vacunación", explicacion: "No existe vacuna para déficit mineral." },
+              { id: "p2", texto: "Inyectar Se/VitE a gestantes", explicacion: "Garantiza paso placentario y calostral." },
+              { id: "p3", texto: "Oscuridad total en corral", explicacion: "Afecta síntesis de Vit D, no soluciona el selenio." }
+            ]
+          }
+        },
+        pistas: ["Relacionado a zonas volcánicas.", "Afecta músculos de alta demanda de oxígeno.", "Protección antioxidante dual."],
+        fuentes: [{ autor: "Maas", ano: "2008", titulo: "Selenium deficiency", revista: "Vet Clin" }]
+      },
+
+      // CAPRINOS (2)
+      {
+        id: "cap-1", categoria: "Producción Animal", especie: "Caprinos", icono: "🐐", dificultad: "Intermedio",
+        titulo: "Cabritos ataxia enzoótica", historia: { signos: "Balanceo (swayback), pelo acerado en madres, suelos con molibdeno.", edad: "2 sem", etapa: "Lactancia", sistema: "Extensivo", raza: "Alpina", sexo: "M", alimentacion: "Leche" },
+        decisiones: {
+          diagnostico: { pregunta: "Diagnóstico", opciones: [{id:"d1", texto:"Hipocuprosis secundaria", explicacion:"Déficit de Cu por Mo induce hipomielinogénesis."},{id:"d2",texto:"Fluorosis",explicacion:"Afecta dientes."},{id:"d3",texto:"Bocio",explicacion:"Es cuello abultado."}], correcta: "d1" },
+          tratamiento: { pregunta: "Tratamiento", opciones: [{id:"t1", texto:"Cobre oral/inyectable", explicacion:"Repone depósitos."},{id:"t2",texto:"Hierro",explicacion:"Bloquea Cu."},{id:"t3",texto:"Sal blanca",explicacion:"No repone Cu."}], correcta: "t1" },
+          prevencion: { pregunta: "Prevención", opciones: [{id:"p1", texto:"Premezcla de Cu superando Mo", explicacion:"Evita secuestro."},{id:"p2",texto:"Dar más Mo",explicacion:"Tóxico."},{id:"p3",texto:"Ayuno",explicacion:"No funcional."}], correcta: "p1" }
+        }, pistas: ["Falla de mielina.", "El pelo despigmenta.", "Antagonista: Molibdeno."], fuentes: [{ autor: "Underwood", ano: "1999", titulo: "Mineral Nutrition", revista: "CABI" }]
+      },
+      {
+        id: "cap-2", categoria: "Producción Animal", especie: "Caprinos", icono: "🐐", dificultad: "Básico",
+        titulo: "Bocio congénito en montaña", historia: { signos: "Neonatos pelones, debilidad, cuello ventral abultado bilateral (tiroides).", edad: "Neonato", etapa: "Nacimiento", sistema: "Montaña", raza: "Boer", sexo: "Mixto", alimentacion: "Sin sal" },
+        decisiones: {
+          diagnostico: { pregunta: "Diagnóstico", opciones: [{id:"d1", texto:"Bocio congénito (Déficit de Yodo)", explicacion:"Hiperplasia tiroidea compensatoria."},{id:"d2",texto:"Linfadenitis caseosa",explicacion:"Es infecciosa."},{id:"d3",texto:"Hipocalcemia",explicacion:"No inflama el cuello."}], correcta: "d1" },
+          tratamiento: { pregunta: "Tratamiento", opciones: [{id:"t1", texto:"Solución Lugol oral/Calostro", explicacion:"Provee Yodo urgente."},{id:"t2",texto:"Cirugía",explicacion:"Letal."},{id:"t3",texto:"Cobre",explicacion:"Inútil aquí."}], correcta: "t1" },
+          prevencion: { pregunta: "Prevención", opciones: [{id:"p1", texto:"Sal Yodada a gestantes", explicacion:"Cruza placenta."},{id:"p2",texto:"Dar crucíferas",explicacion:"Tóxico bociógeno."},{id:"p3",texto:"Agua sin sol",explicacion:"No aporta I."}], correcta: "p1" }
+        }, pistas: ["Tiroides inflamada.", "No hay sal suplementada.", "Causa alopecia neonatal."], fuentes: [{ autor: "Knowles", ano: "2007", titulo: "Iodine in ruminants", revista: "NZ Vet J" }]
+      },
+
+      // EQUINOS (2)
+      {
+        id: "eq-1", categoria: "Producción Animal", especie: "Equinos", icono: "🐎", dificultad: "Intermedio",
+        titulo: "Cabeza grande y claudicación", historia: { signos: "Osteodistrofia maxilar bilateral, exceso salvado de trigo.", edad: "2 años", etapa: "Entrenamiento", sistema: "Caballeriza", raza: "Cuarto Milla", sexo: "Macho", alimentacion: "Mucho salvado" },
+        decisiones: {
+          diagnostico: { pregunta: "Diagnóstico", opciones: [{id:"d1", texto:"Hiperparatiroidismo Nutricional Secundario", explicacion:"Exceso crónico de P deprime Ca, PTH eleva y deforma hueso."},{id:"d2",texto:"Paperas",explicacion:"Infeccioso, ganglios."},{id:"d3",texto:"Raquitismo de Vit D",explicacion:"Raro en caballos al sol."}], correcta: "d1" },
+          tratamiento: { pregunta: "Tratamiento", opciones: [{id:"t1", texto:"Quitar salvado, dar Carbonato de Ca", explicacion:"Invierte el cociente a favor del Ca."},{id:"t2",texto:"Corticoides",explicacion:"Desmineraliza más."},{id:"t3",texto:"Avena pura",explicacion:"Sigue desbalanceado."}], correcta: "t1" },
+          prevencion: { pregunta: "Regla Nutricional", opciones: [{id:"p1", texto:"Relación Ca:P de 1.5:1 a 2:1", explicacion:"Ca siempre mayor a P."},{id:"p2",texto:"P 3 veces mayor",explicacion:"Destruye el hueso."},{id:"p3",texto:"No usar minerales",explicacion:"Mal manejo."}], correcta: "p1" }
+        }, pistas: ["Exceso de Fósforo.", "Aumento de hormona paratiroidea.", "Hueso se vuelve tejido fibroso."], fuentes: [{ autor: "NRC", ano: "2007", titulo: "Horses", revista: "NAP" }]
+      },
+      {
+        id: "eq-2", categoria: "Producción Animal", especie: "Equinos", icono: "🐎", dificultad: "Avanzado",
+        titulo: "Alopecia en crin y olor a ajo", historia: { signos: "Pérdida de cola/crin, fisuras en pezuña, halitosis aliácea.", edad: "7 años", etapa: "Mantenimiento", sistema: "Extensivo", raza: "Criollo", sexo: "Hembra", alimentacion: "Astragalus" },
+        decisiones: {
+          diagnostico: { pregunta: "Toxicológico", opciones: [{id:"d1", texto:"Selenosis crónica (Álcalis)", explicacion:"El Selenio sustituye al Azufre en queratina (rompe pelo y casco)."},{id:"d2",texto:"Sarna",explicacion:"Prurito, no pierde casco."},{id:"d3",texto:"Laminitis clásica",explicacion:"No tira la crin."}], correcta: "d1" },
+          tratamiento: { pregunta: "Tratamiento", opciones: [{id:"t1", texto:"Retirar pasto, dar proteínas sulfuradas (metionina)", explicacion:"El Azufre compite y saca al Selenio tóxico."},{id:"t2",texto:"Inyectar Selenio",explicacion:"Mortal por sobredosis."},{id:"t3",texto:"Herrar",explicacion:"Corona necrosada, muy doloroso."}], correcta: "t1" },
+          prevencion: { pregunta: "Prevención", opciones: [{id:"p1", texto:"Erradicar plantas bioacumuladoras", explicacion:"El único control real."},{id:"p2",texto:"Se en agua",explicacion:"Tóxico."},{id:"p3",texto:"Paja exclusiva",explicacion:"Desnutrición."}], correcta: "p1" }
+        }, pistas: ["Planta acumuladora de Se.", "Pelo y pezuña usan puentes disulfuro.", "El aliento huele a ajo (dimetil seleniuro)."], fuentes: [{ autor: "Tiroli", ano: "2018", titulo: "Selenium toxicosis", revista: "EVE" }]
+      },
+
+      // PORCINOS (2)
+      {
+        id: "porc-1", categoria: "Producción Animal", especie: "Porcinos", icono: "🐖", dificultad: "Básico",
+        titulo: "Lechones pálidos y 'thumps'", historia: { signos: "Lactantes confinamiento, pálidos (blancos), disnea cardíaca.", edad: "18 días", etapa: "Lactancia", sistema: "Rejilla", raza: "York", sexo: "Mixto", alimentacion: "Leche sola" },
+        decisiones: {
+          diagnostico: { pregunta: "Diagnóstico", opciones: [{id:"d1", texto:"Anemia ferropénica", explicacion:"Sin acceso a tierra, agotan reservas de hierro al día 7."},{id:"d2",texto:"Peste porcina",explicacion:"Fiebre y cianosis."},{id:"d3",texto:"Falta de Ca",explicacion:"Hueso blando, no palidez."}], correcta: "d1" },
+          tratamiento: { pregunta: "Tratamiento", opciones: [{id:"t1", texto:"Inyectar Hierro Dextrano IM", explicacion:"Repone síntesis de Hb."},{id:"t2",texto:"Cobre oral",explicacion:"Falta de Fe es primaria."},{id:"t3",texto:"Destete temprano",explicacion:"Muerte por estrés."}], correcta: "t1" },
+          prevencion: { pregunta: "Manejo Neonatal", opciones: [{id:"p1", texto:"Inyectar 200mg Hierro al día 1-3", explicacion:"Estándar mundial porcícola."},{id:"p2",texto:"Fierro en comedero",explicacion:"Inútil e insalubre."},{id:"p3",texto:"Vitaminas",explicacion:"No forman sangre."}], correcta: "p1" }
+        }, pistas: ["La leche no aporta este mineral.", "Sin glóbulos rojos no hay oxígeno.", "Manejo universal omitido."], fuentes: [{ autor: "Bhattarai", ano: "2015", titulo: "Piglets hematology", revista: "JSHAP" }]
+      },
+      {
+        id: "porc-2", categoria: "Producción Animal", especie: "Porcinos", icono: "🐖", dificultad: "Intermedio",
+        titulo: "Costras secas simétricas", historia: { signos: "Engorda con exceso de Ca. Costras y grietas no pruriginosas (paraqueratosis).", edad: "12 sem", etapa: "Engorda", sistema: "Cemento", raza: "Duroc", sexo: "Mixto", alimentacion: "Maíz/soya" },
+        decisiones: {
+          diagnostico: { pregunta: "Dermatológico", opciones: [{id:"d1", texto:"Paraqueratosis porcina (Falta de Zn)", explicacion:"Ca excesivo + fitatos = quelación de Zn intestinal."},{id:"d2",texto:"Sarna",explicacion:"Habría rascado violento."},{id:"d3",texto:"Erisipela",explicacion:"Piel en diamantes, fiebre alta."}], correcta: "d1" },
+          tratamiento: { pregunta: "Corrección", opciones: [{id:"t1", texto:"Bajar Calcio + dar Zinc", explicacion:"Desbloquea absorción y restaura epidermis."},{id:"t2",texto:"Baño acaricida",explicacion:"Inútil."},{id:"t3",texto:"Vitamina A",explicacion:"No repara enlace mineral."}], correcta: "t1" },
+          prevencion: { pregunta: "Formulación", opciones: [{id:"p1", texto:"Relación Ca:P < 1.3:1 + Fitasa", explicacion:"La fitasa destruye el anillo quelante."},{id:"p2",texto:"Quitar microelementos",explicacion:"Mortal a largo plazo."},{id:"p3",texto:"Más Ca",explicacion:"Empeora dermatosis."}], correcta: "p1" }
+        }, pistas: ["No hay comezón extrema.", "Mineral relacionado a inmunidad y cicatrización.", "Enzima Fitasa rompe el complejo."], fuentes: [{ autor: "NRC", ano: "2012", titulo: "Swine", revista: "NAP" }]
+      },
+
+      // AVES (2)
+      {
+        id: "ave-1", categoria: "Producción Animal", especie: "Aves", icono: "🐓", dificultad: "Intermedio",
+        titulo: "Cáscara en fárfara y fatiga jaula", historia: { signos: "Huevos rotos/blandos, parálisis (pingüino), huesos frágiles.", edad: "45 sem", etapa: "Postura Pico", sistema: "Batería", raza: "Lohmann", sexo: "H", alimentacion: "Sin carbonato grueso" },
+        decisiones: {
+          diagnostico: { pregunta: "Trastorno metabólico", opciones: [{id:"d1", texto:"Fatiga de jaula (Hipocalcemia y desmineralización)", explicacion:"El ave vacía el hueso medular por cada huevo (2g Ca)."},{id:"d2",texto:"Newcastle",explicacion:"Signos nerviosos y mortalidad masiva."},{id:"d3",texto:"Vit B1",explicacion:"Cabeza retraída (neuritis)."}], correcta: "d1" },
+          tratamiento: { pregunta: "Rescate", opciones: [{id:"t1", texto:"Carbonato grueso (gravilla) + Vit D3", explicacion:"Partícula gruesa disuelve lento de noche en molleja."},{id:"t2",texto:"Tetraciclinas",explicacion:"Quélase el poco Ca restante."},{id:"t3",texto:"Quitar luz",explicacion:"Baja producción, no repone mineral."}], correcta: "t1" },
+          prevencion: { pregunta: "Nutrición", opciones: [{id:"p1", texto:"Ca total > 3.8% mixto (grueso/fino)", explicacion:"Balancea absorción día y noche."},{id:"p2",texto:"Ca al 1%",explicacion:"Rompe huesos al 3er huevo."},{id:"p3",texto:"Quitar Fósforo",explicacion:"Debilita esqueleto estructural."}], correcta: "p1" }
+        }, pistas: ["La cáscara requiere 2 gramos diarios.", "El calcio nocturno es vital.", "Textura de la calcita."], fuentes: [{ autor: "Leeson", ano: "2005", titulo: "Poultry Nutrition", revista: "UnivBooks" }]
+      },
+      {
+        id: "ave-2", categoria: "Producción Animal", especie: "Aves", icono: "🐓", dificultad: "Avanzado",
+        titulo: "Tendón luxado (Perosis) en engorda", historia: { signos: "Corvejón aplanado, tendón de Aquiles deslizado 90°.", edad: "4 sem", etapa: "Engorda", sistema: "Piso", raza: "Ross", sexo: "M", alimentacion: "Sin microminerales, exceso Ca/P" },
+        decisiones: {
+          diagnostico: { pregunta: "Ortopédico", opciones: [{id:"d1", texto:"Perosis (Deficiencia Manganeso)", explicacion:"Falla condrogénesis, cóndilo aplanado luxa el tendón."},{id:"d2",texto:"Micoplasma",explicacion:"Articulación purulenta/cremosa."},{id:"d3",texto:"Raquitismo",explicacion:"Picos de goma."}], correcta: "d1" },
+          tratamiento: { pregunta: "Lote completo", opciones: [{id:"t1", texto:"Sacrificio afectados, dar Mn (Sulfato/Óxido) al resto", explicacion:"La luxación ya no es reversible mecánicamente."},{id:"t2",texto:"Férulas individuales",explicacion:"Inviable en 20,000 aves."},{id:"t3",texto:"Más calcio",explicacion:"Bloquea absorción del poco Mn."}], correcta: "t1" },
+          prevencion: { pregunta: "Formulación", opciones: [{id:"p1", texto:"70-100 ppm de Mn, sin abusar Ca/P", explicacion:"Soporta rápido crecimiento cartilaginoso."},{id:"p2",texto:"Solo sorgo",explicacion:"Sorgo es pobre en Mn."},{id:"p3",texto:"Vacunar perosis",explicacion:"No es virus."}], correcta: "p1" }
+        }, pistas: ["Desarrollo del cartílago óseo.", "Tendón de Aquiles zafado.", "Cofactor de mucopolisacáridos."], fuentes: [{ autor: "Klasing", ano: "1998", titulo: "Avian Nutrition", revista: "CABI" }]
+      },
+
+      // PERROS (2)
+      {
+        id: "can-1", categoria: "Clínica Veterinaria", especie: "Perros", icono: "🐕", dificultad: "Básico",
+        titulo: "Tetania en Chihuahua lactante", historia: { signos: "21 días postparto, dieta pura pechuga. Hiperexcitada, jadeo (41.2°C), espasmos tetánicos sostenidos.", edad: "4 años", etapa: "Lactancia", sistema: "Casa", raza: "Chihuahua", sexo: "H", alimentacion: "Pollo y arroz (sin hueso)" },
+        decisiones: {
+          diagnostico: { pregunta: "Diagnóstico urgente", opciones: [{id:"d1", texto:"Eclampsia puerperal (Hipocalcemia)", explicacion:"Dieta de carne (puro P, sin Ca) + lactancia vacía Ca sérico."},{id:"d2",texto:"Estricnina",explicacion:"Contexto lácteo dicta eclampsia como primaria."},{id:"d3",texto:"Hipoglucemia",explicacion:"Típica del cachorro, no de la madre."}], correcta: "d1" },
+          tratamiento: { pregunta: "Rescate", opciones: [{id:"t1", texto:"Gluconato de Calcio IV lento con ECG, retirar crías", explicacion:"Restaura umbral de membrana; crías deben destetarse temporalmente."},{id:"t2",texto:"Diazepam oral",explicacion:"Falla si no se sube el Ca."},{id:"t3",texto:"Paracetamol",explicacion:"Tóxico en perros a dosis altas y no arregla el músculo."}], correcta: "t1" },
+          prevencion: { pregunta: "Para futuro", opciones: [{id:"p1", texto:"Dieta cachorro a madre, destete progresivo, Ca oral", explicacion:"Soporta demanda metabólica láctea."},{id:"p2",texto:"Dar más carne",explicacion:"El peor error, Ca:P es 1:20."},{id:"p3",texto:"Quitar agua",explicacion:"Mata por deshidratación."}], correcta: "p1" }
+        }, pistas: ["Fiebre alta por trabajo muscular constante.", "La pechuga de pollo tiene muchísimo Fósforo y nada de este mineral.", "Perra pequeña con gran camada."], fuentes: [{ autor: "Holst", ano: "2010", titulo: "Canine puerperal tetany", revista: "JVECC" }]
+      },
+      {
+        id: "can-2", categoria: "Clínica Veterinaria", especie: "Perros", icono: "🐕", dificultad: "Avanzado",
+        titulo: "Dermatosis costrosa periorificial", historia: { signos: "Husky con costras gruesas en hocico, ojos, patas. Dueño daba calcio extra.", edad: "1.5 años", etapa: "Adulto", sistema: "Casa", raza: "Husky", sexo: "M", alimentacion: "Dietética barata + Tabletas Calcio" },
+        decisiones: {
+          diagnostico: { pregunta: "Diagnóstico", opciones: [{id:"d1", texto:"Dermatosis responsiva a Zinc (Tipo I)", explicacion:"Razas nórdicas absorben mal Zn; exceso de Ca lo bloquea aún más."},{id:"d2",texto:"Demodex",explicacion:"Falta el patrón periorificial costroso y falla a rascados."},{id:"d3",texto:"Lupus",explicacion:"Solo nariz lisa, no costras queratósicas sistémicas."}], correcta: "d1" },
+          tratamiento: { pregunta: "Terapia", opciones: [{id:"t1", texto:"Quitar pastillas Calcio, iniciar Metionina-Zn oral", explicacion:"Desbloquea absorción y suplementa alta biodisponibilidad."},{id:"t2",texto:"Prednisona",explicacion:"Inmunosuprime y no arregla epidermis."},{id:"t3",texto:"Cobre",explicacion:"Compite con Zn."}], correcta: "t1" },
+          prevencion: { pregunta: "Mantenimiento", opciones: [{id:"p1", texto:"Dieta premium, Zn de por vida, CERO calcio extra", explicacion:"Controla el defecto genético permanente."},{id:"p2",texto:"Dieta rica en salvado",explicacion:"Fitatos secuestran Zn."},{id:"p3",texto:"Corte de pelo",explicacion:"No arregla la piel inferior."}], correcta: "p1" }
+        }, pistas: ["Raza nórdica.", "Problema de queratinización epidérmica.", "El dueño causó antagonismo al darle pastillas de hueso."], fuentes: [{ autor: "Colombini", ano: "1999", titulo: "Zinc-responsive dermatosis", revista: "Vet Clinics" }]
+      },
+
+      // GATOS (2)
+      {
+        id: "fel-1", categoria: "Clínica Veterinaria", especie: "Gatos", icono: "🐈", dificultad: "Intermedio",
+        titulo: "Tapón uretral mucocristalino", historia: { signos: "Gato gordo indoor, estranguria, llanto. Vejiga como naranja. Dieta seca barata, pH orina 7.2.", edad: "4 años", etapa: "Adulto", sistema: "Depa", raza: "DPC", sexo: "M", alimentacion: "Seco alto magnesio" },
+        decisiones: {
+          diagnostico: { pregunta: "Cristalografía", opciones: [{id:"d1", texto:"Estruvita (Fosfato Amonio Magnesio) en orina alcalina", explicacion:"Dietas altas en Mg y pH >6.5 precipitan arena que forma tapones."},{id:"d2",texto:"Oxalato de Ca",explicacion:"Precipita en orinas muy ácidas, sin importar tanto el Mg."},{id:"d3",texto:"Cistina",explicacion:"Raro, genético."}], correcta: "d1" },
+          tratamiento: { pregunta: "Manejo urgente", opciones: [{id:"t1", texto:"Desobstrucción por sondaje estéril, fluidos (sin K)", explicacion:"Evita rotura vesical y diluye el potasio sérico mortal."},{id:"t2",texto:"Apretar vejiga fuerte",explicacion:"Rotura inminente."},{id:"t3",texto:"Diuréticos (Furosemida)",explicacion:"Mata al paciente si la manguera está tapada."}], correcta: "t1" },
+          prevencion: { pregunta: "Nutrición a largo plazo", opciones: [{id:"p1", texto:"Dieta urinaria húmeda (pH ácido 6.2), bajo Mg", explicacion:"Diluye orina y el pH ácido disuelve cristales residuales de estruvita."},{id:"p2",texto:"Dar Bicarbonato",explicacion:"Alcaliniza orina, creando piedras instantáneas."},{id:"p3",texto:"Comida seca 1 vez al día",explicacion:"Genera marea alcalina postprandial."}], correcta: "p1" }
+        }, pistas: ["Componente triple: P, NH4, y Mg.", "Fácil disolución en pH ácido.", "Comida seca = Gato poco hidratado = orina concentrada."], fuentes: [{ autor: "Bartges", ano: "2015", titulo: "Feline struvite", revista: "Vet Clinics SA" }]
+      },
+      {
+        id: "fel-2", categoria: "Clínica Veterinaria", especie: "Gatos", icono: "🐈", dificultad: "Avanzado",
+        titulo: "Falla Renal Geriátrica con huesos de goma", historia: { signos: "PU/PD, riñones pequeños, Creatinina 3.8. Fósforo 8.4 (muy alto), PTH alta.", edad: "14 años", etapa: "Geriátrico", sistema: "Casa", raza: "Siamés", sexo: "H", alimentacion: "Húmeda normal alta en P" },
+        decisiones: {
+          diagnostico: { pregunta: "Trastorno Mineral", opciones: [{id:"d1", texto:"Hiperfosfatemia e Hiperparatiroidismo Renal Secundario", explicacion:"Falla TFG retiene Fósforo, dispara FGF-23 y PTH causando toxicidad urémica y calcificación tisular."},{id:"d2",texto:"Hipertiroidismo",explicacion:"Provoca hiperactividad, no retención renal de Fósforo."},{id:"d3",texto:"Diabetes",explicacion:"Habría glucosa alta en orina."}], correcta: "d1" },
+          tratamiento: { pregunta: "Intervención Nutricional", opciones: [{id:"t1", texto:"Dieta Renal (Bajo Fósforo) + Quelantes de Fósforo con comida", explicacion:"El quelante atrapa el P en el intestino antes de que entre a sangre. Base de guías IRIS."},{id:"t2",texto:"Fosfato Dicálcico",explicacion:"Acelera insuficiencia renal."},{id:"t3",texto:"Vitamina D masiva",explicacion:"Calcificación aórtica fulminante."}], correcta: "t1" },
+          prevencion: { pregunta: "Meta Clínica", opciones: [{id:"p1", texto:"Mantener Fósforo sérico < 5.0 mg/dL (Estadio IRIS 3)", explicacion:"Mejora esperanza de vida."},{id:"p2",texto:"Sin límite",explicacion:"Acorta vida."},{id:"p3",texto:"Carne pura",explicacion:"Bomba de fósforo, letal."}], correcta: "p1" }
+        }, pistas: ["El riñón roto no puede orinar este anión.", "El fármaco indicado se mezcla con el alimento para actuar como 'esponja'.", "Hormonas FGF-23 y Paratohormona involucradas."], fuentes: [{ autor: "IRIS", ano: "2023", titulo: "Feline CKD Guidelines", revista: "IRIS Org" }]
+      },
+
+      // =====================================================
+      // CASOS NIVEL A — biblioteca científica ampliada
+      // Se distribuyen entre Modo Examen y Caso Sorpresa.
+      // =====================================================
+      {
+        id: "A-bov-castro-2026", categoria: "Producción Animal", especie: "Bovinos", icono: "🐄", dificultad: "Avanzado", nivelFuente: "A", modos: ["estudio", "examen"],
+        titulo: "Claudicación bilateral y miopatía en bovinos adultos",
+        historia: { edad: "Adultos", sexo: "Hembras", raza: "Carne", sistema: "Pastoreo", alimentacion: "Dieta de campo con antecedente de suplementación mineral reciente", etapa: "Adultos", signos: "Cojera marcada; en algunos animales, descenso bilateral de corvejones o desplazamiento dorsal de la escápula. Lesiones musculares pálidas y degenerativas.", evolucion: "Problema en dos grupos; la suplementación reciente puede alterar la interpretación de algunos tejidos." },
+        decisiones: {
+          diagnostico: { pregunta: "¿Qué interpretación integra mejor los hallazgos?", correcta: "d1", opciones: [
+            {id:"d1", texto:"Miopatía nutricional asociada a deficiencia de Se con deficiencia concomitante de Cu", explicacion:"El estudio documentó actividad baja de GPx y concentraciones bajas de Cu; la deficiencia de Cu pudo favorecer daño oxidativo y lesiones musculares."},
+            {id:"d2", texto:"Hipocalcemia puerperal", explicacion:"No corresponde al patrón de lesión muscular ni al contexto de bovinos adultos no periparto."},
+            {id:"d3", texto:"Lesión traumática aislada", explicacion:"La presentación grupal y los hallazgos minerales hacen insuficiente una explicación exclusivamente traumática."}
+          ]},
+          tratamiento: { pregunta: "¿Cuál es el enfoque más prudente tras identificar el problema?", correcta: "t1", opciones: [
+            {id:"t1", texto:"Corregir el programa mineral según análisis y dar soporte a los animales afectados", explicacion:"La corrección debe basarse en el estado mineral documentado; el trabajo resalta que una suplementación reciente puede modificar algunos indicadores."},
+            {id:"t2", texto:"Administrar calcio IV a todo el lote", explicacion:"No aborda el patrón de Se/Cu documentado."},
+            {id:"t3", texto:"Aumentar indiscriminadamente todos los microminerales", explicacion:"La suplementación sin diagnóstico puede crear excesos e interacciones."}
+          ]},
+          prevencion: { pregunta: "¿Qué estrategia previene mejor recurrencias?", correcta: "p1", opciones: [
+            {id:"p1", texto:"Monitorear dieta y biomarcadores minerales antes y después de suplementar", explicacion:"Permite interpretar exposición, reservas y respuesta sin depender de una sola muestra."},
+            {id:"p2", texto:"Suplementar solo cuando aparezca cojera", explicacion:"Es una estrategia tardía y no preventiva."},
+            {id:"p3", texto:"Eliminar todo el cobre de la ración", explicacion:"La deficiencia de Cu formó parte del problema, no su exceso."}
+          ]}
+        },
+        pistas: ["El músculo y el sistema antioxidante están involucrados.", "Un marcador funcional de Se fue bajo.", "Hay dos microminerales implicados."],
+        fuentes: [{ autor:"Castro, D. J. et al.", ano:"2026", titulo:"Nutritional myopathy associated with selenium and copper deficiency in beef cattle in Argentina", revista:"Journal of Veterinary Diagnostic Investigation", doi:"10.1177/10406387251392592", url:"https://pubmed.ncbi.nlm.nih.gov/41331964/" }]
+      },
+      {
+        id: "A-bov-enjalbert-2006", categoria: "Producción Animal", especie: "Bovinos", icono: "🐄", dificultad: "Intermedio", nivelFuente: "A", modos: ["estudio", "sorpresa"],
+        titulo: "Hato con baja producción, cojeras y terneros con pobre crecimiento",
+        historia: { edad: "Hato mixto", sexo: "Mixto", raza: "Leche y carne", sistema: "Comercial", alimentacion: "Raciones variables entre explotaciones", etapa: "Hato", signos: "En el hato se combinan baja producción de leche, alteraciones locomotoras y terneros con crecimiento deficiente o mayor susceptibilidad a enfermedad.", evolucion: "El patrón aparece a nivel de rebaño y requiere interpretar varios oligoelementos, no un solo animal." },
+        decisiones: {
+          diagnostico: { pregunta: "¿Qué enfoque diagnóstico es más coherente con la evidencia de campo?", correcta: "d1", opciones: [
+            {id:"d1", texto:"Evaluar estatus de Cu, Zn y Se a nivel de hato y relacionarlo con desempeño y salud", explicacion:"El estudio retrospectivo relacionó estados deficientes o marginales de estos oligoelementos con problemas de salud y rendimiento."},
+            {id:"d2", texto:"Diagnosticar una única deficiencia solo por el signo clínico predominante", explicacion:"Los signos son inespecíficos y pueden coexistir alteraciones minerales."},
+            {id:"d3", texto:"Descartar nutrición porque hay animales adultos y terneros afectados", explicacion:"Precisamente el análisis a nivel de hato mostró asociaciones en ambos grupos."}
+          ]},
+          tratamiento: { pregunta: "¿Qué paso debe preceder a cualquier corrección mineral del hato?", correcta: "t1", opciones: [
+            {id:"t1", texto:"Confirmar el estado mineral y revisar la ración antes de ajustar la suplementación", explicacion:"La interpretación poblacional evita corregir a ciegas y permite detectar deficiencia o estado marginal."},
+            {id:"t2", texto:"Duplicar de inmediato toda la premezcla", explicacion:"Puede inducir excesos o antagonismos."},
+            {id:"t3", texto:"Retirar todos los minerales traza", explicacion:"Aumentaría el riesgo de deficiencia."}
+          ]},
+          prevencion: { pregunta: "¿Qué vigilancia es más útil?", correcta: "p1", opciones: [
+            {id:"p1", texto:"Monitoreo periódico del hato junto con indicadores productivos y sanitarios", explicacion:"Es consistente con un problema poblacional y permite detectar estados marginales antes de signos severos."},
+            {id:"p2", texto:"Esperar a que aparezca mortalidad", explicacion:"Pierde la oportunidad de prevención."},
+            {id:"p3", texto:"Usar únicamente el color del pelo como criterio", explicacion:"Un solo signo no resume el estado mineral del hato."}
+          ]}
+        },
+        pistas: ["Piensa a nivel de hato.", "No todos los problemas minerales son binarios: también hay estados marginales.", "Cu, Zn y Se fueron los elementos estudiados."],
+        fuentes: [{ autor:"Enjalbert, F. et al.", ano:"2006", titulo:"Effects of copper, zinc and selenium status on performance and health in commercial dairy and beef herds: retrospective study", revista:"Journal of Animal Physiology and Animal Nutrition", doi:"10.1111/j.1439-0396.2006.00627.x", url:"https://pubmed.ncbi.nlm.nih.gov/17083426/" }]
+      },
+      {
+        id: "A-porc-piper-1975", categoria: "Producción Animal", especie: "Porcinos", icono: "🐖", dificultad: "Avanzado", nivelFuente: "A", modos: ["estudio", "examen"],
+        titulo: "Cerdos en crecimiento con muerte súbita y necrosis hepática",
+        historia: { edad: "Crecimiento", sexo: "Mixto", raza: "Comercial", sistema: "Experimental", alimentacion: "Ración basal con 96.8% chícharo de descarte, baja en Se y vitamina E", etapa: "Crecimiento", signos: "Ganancia lenta; algunos cerdos mueren súbitamente. Necropsia: necrosis hepática masiva, nefrosis, miopatía cardiaca y esquelética, edema e ictericia.", evolucion: "Alta mortalidad en el grupo no suplementado durante el periodo experimental." },
+        decisiones: {
+          diagnostico: { pregunta: "¿Cuál es la interpretación principal del cuadro?", correcta: "d1", opciones: [
+            {id:"d1", texto:"Deficiencia combinada de selenio-vitamina E", explicacion:"El grupo basal bajo en Se y vitamina E desarrolló lesiones típicas, mientras la suplementación con Se o vitamina E evitó los signos y lesiones atribuibles a la deficiencia."},
+            {id:"d2", texto:"Deficiencia primaria de calcio", explicacion:"No explica la necrosis hepática masiva ni la miopatía oxidativa."},
+            {id:"d3", texto:"Toxicidad por cobre", explicacion:"El experimento se diseñó alrededor de una dieta baja en Se y vitamina E."}
+          ]},
+          tratamiento: { pregunta: "¿Qué intervención fue protectora en el estudio?", correcta: "t1", opciones: [
+            {id:"t1", texto:"Suplementar selenio o vitamina E en la dieta experimental", explicacion:"En los grupos suplementados no se observaron los signos, muertes o lesiones atribuidos a la deficiencia."},
+            {id:"t2", texto:"Retirar todo el fósforo", explicacion:"No fue la variable causal estudiada."},
+            {id:"t3", texto:"Añadir más chícharo de descarte", explicacion:"Mantendría el patrón dietético deficiente."}
+          ]},
+          prevencion: { pregunta: "¿Qué principio de formulación se desprende del estudio?", correcta: "p1", opciones: [
+            {id:"p1", texto:"Evaluar conjuntamente el aporte de Se y vitamina E en dietas de riesgo", explicacion:"Ambos nutrientes forman parte de la protección antioxidante y el experimento mostró respuesta a la suplementación."},
+            {id:"p2", texto:"Suplementar Se sin considerar margen de seguridad", explicacion:"El Se tiene un margen estrecho y no debe suplementarse indiscriminadamente."},
+            {id:"p3", texto:"Ignorar la composición del ingrediente principal", explicacion:"La composición de la dieta basal fue central para el cuadro."}
+          ]}
+        },
+        pistas: ["Hay daño oxidativo multisistémico.", "La dieta experimental era baja en un mineral y una vitamina antioxidante.", "La suplementación de cualquiera de los dos protegió a los animales."],
+        fuentes: [{ autor:"Piper, R. C. et al.", ano:"1975", titulo:"Selenium-vitamin E deficiency in swine fed peas (Pisum sativum)", revista:"American Journal of Veterinary Research", url:"https://pubmed.ncbi.nlm.nih.gov/1115425/" }]
+      },
+      {
+        id: "A-porc-vanvleet-1981", categoria: "Producción Animal", especie: "Porcinos", icono: "🐖", dificultad: "Avanzado", nivelFuente: "A", modos: ["estudio", "sorpresa"],
+        titulo: "Miopatía por interacción de oligoelementos en cerdos destetados",
+        historia: { edad: "Destete", sexo: "Mixto", raza: "Comercial", sistema: "Experimental", alimentacion: "Dietas con distintos metales traza sobre un contexto susceptible a Se-vitamina E", etapa: "Posdestete", signos: "Algunos grupos desarrollan necrosis microscópica de músculo cardiaco y esquelético; en ciertos tratamientos cae la actividad de glutatión peroxidasa.", evolucion: "La magnitud de las lesiones depende del metal traza añadido y de su interacción con el sistema Se-vitamina E." },
+        decisiones: {
+          diagnostico: { pregunta: "¿Qué concepto nutricional evalúa mejor este experimento?", correcta: "d1", opciones: [
+            {id:"d1", texto:"Interacciones entre metales traza que pueden modificar la expresión de deficiencia Se-vitamina E", explicacion:"El trabajo indujo lesiones de deficiencia Se-E con varios metales y mostró respuestas distintas entre tratamientos."},
+            {id:"d2", texto:"Que todos los metales traza causan la misma toxicosis", explicacion:"Los efectos fueron diferentes según el metal y no todos generaron el mismo patrón."},
+            {id:"d3", texto:"Que la GPx no tiene relación con el estado de Se", explicacion:"La actividad de GPx fue un marcador funcional relevante en varios grupos."}
+          ]},
+          tratamiento: { pregunta: "Ante un cuadro semejante en campo, ¿qué es más razonable?", correcta: "t1", opciones: [
+            {id:"t1", texto:"Revisar la dieta completa, retirar el exceso antagonista identificado y corregir Se-vitamina E según diagnóstico", explicacion:"El principio es reconocer la interacción y no tratar un solo nutriente aislado."},
+            {id:"t2", texto:"Añadir todos los metales probados", explicacion:"Aumentaría el riesgo de interacciones y toxicidad."},
+            {id:"t3", texto:"Corregir únicamente calcio", explicacion:"No corresponde al mecanismo estudiado."}
+          ]},
+          prevencion: { pregunta: "¿Qué enseñanza preventiva es central?", correcta: "p1", opciones: [
+            {id:"p1", texto:"Formular minerales considerando antagonismos y no solo concentraciones individuales", explicacion:"La disponibilidad funcional depende de interacciones entre nutrientes."},
+            {id:"p2", texto:"Usar siempre la dosis máxima de cada micromineral", explicacion:"Los excesos pueden crear antagonismos o toxicidad."},
+            {id:"p3", texto:"Evaluar solo el mineral en hígado", explicacion:"El trabajo mostró que un único indicador puede no reflejar toda la respuesta funcional."}
+          ]}
+        },
+        pistas: ["No es una deficiencia aislada.", "La GPx ayuda a seguir el sistema antioxidante.", "Piensa en antagonismos por metales traza."],
+        fuentes: [{ autor:"Van Vleet, J. F. et al.", ano:"1981", titulo:"Induction of lesions of selenium-vitamin E deficiency in weanling swine fed silver, cobalt, tellurium, zinc, cadmium, and vanadium", revista:"American Journal of Veterinary Research", url:"https://pubmed.ncbi.nlm.nih.gov/7258798/" }]
+      },
+      {
+        id: "A-ave-zhao-2020", categoria: "Producción Animal", especie: "Aves", icono: "🐓", dificultad: "Intermedio", nivelFuente: "A", modos: ["estudio", "examen"],
+        titulo: "Ponedoras con cáscara débil y pérdida de resistencia ósea",
+        historia: { edad: "22-34 semanas", sexo: "Hembras", raza: "Ponedoras", sistema: "Producción de huevo", alimentacion: "Dieta experimental baja en Ca (1.5%) frente a control", etapa: "Postura", signos: "Aumentan huevos rotos; disminuyen grosor y resistencia de cáscara, densidad mineral ósea y resistencia de fémur y tibia.", evolucion: "Los cambios empeoran conforme avanza la exposición a la dieta baja en calcio." },
+        decisiones: {
+          diagnostico: { pregunta: "¿Qué alteración nutricional explica mejor el patrón experimental?", correcta: "d1", opciones: [
+            {id:"d1", texto:"Bajo aporte dietético de calcio con deterioro progresivo de hueso y calidad de cáscara", explicacion:"El grupo con 1.5% de Ca mostró menor densidad y resistencia ósea y peor calidad de cáscara."},
+            {id:"d2", texto:"Exceso de manganeso", explicacion:"No fue la variable experimental."},
+            {id:"d3", texto:"Deficiencia aislada de hierro", explicacion:"No explica el patrón óseo y de cáscara observado."}
+          ]},
+          tratamiento: { pregunta: "¿Cuál es la corrección nutricional esencial?", correcta: "t1", opciones: [
+            {id:"t1", texto:"Restablecer un aporte adecuado de calcio en la dieta de postura", explicacion:"El factor experimental fue el bajo calcio dietético."},
+            {id:"t2", texto:"Reducir aún más el calcio", explicacion:"Profundizaría el problema."},
+            {id:"t3", texto:"Añadir solo hierro", explicacion:"No aborda el factor causal."}
+          ]},
+          prevencion: { pregunta: "¿Qué indicador productivo puede alertar tempranamente?", correcta: "p1", opciones: [
+            {id:"p1", texto:"Aumento de huevos rotos y reducción de grosor/resistencia de cáscara", explicacion:"Estos cambios acompañaron la dieta baja en Ca y preceden o acompañan deterioro esquelético."},
+            {id:"p2", texto:"Aumento de pigmentación del huevo", explicacion:"No fue el patrón reportado."},
+            {id:"p3", texto:"Mayor ganancia de peso", explicacion:"El grupo bajo en Ca no mostró ese patrón."}
+          ]}
+        },
+        pistas: ["Relaciona hueso medular y cáscara.", "El mineral estaba deliberadamente bajo en la dieta.", "La fragilidad aumentó con el tiempo."],
+        fuentes: [{ autor:"Zhao, S. C. et al.", ano:"2020", titulo:"Influences of low level of dietary calcium on bone characters in laying hens", revista:"Poultry Science", doi:"10.1016/j.psj.2020.08.057", url:"https://pubmed.ncbi.nlm.nih.gov/33248625/" }]
+      },
+      {
+        id: "A-ave-liu-2015", categoria: "Producción Animal", especie: "Aves", icono: "🐓", dificultad: "Avanzado", nivelFuente: "A", modos: ["estudio", "sorpresa"],
+        titulo: "Broilers con perosis y alteración de la tibia proximal",
+        historia: { edad: "42 días", sexo: "Machos", raza: "Arbor Acres", sistema: "Experimental", alimentacion: "Dietas con 60, 40 o 8.7 mg Mn/kg", etapa: "Crecimiento", signos: "Alteraciones de desarrollo tibial compatibles con perosis; cambios en trabéculas y daño ultraestructural de osteoblastos.", evolucion: "Las alteraciones se intensifican con la deficiencia de manganeso." },
+        decisiones: {
+          diagnostico: { pregunta: "¿Qué deficiencia explica mejor la perosis del estudio?", correcta: "d1", opciones: [
+            {id:"d1", texto:"Manganeso", explicacion:"La reducción de Mn dietético produjo cambios de microestructura tibial y señalización ósea asociados con perosis."},
+            {id:"d2", texto:"Hierro", explicacion:"No fue la variable dietética del experimento."},
+            {id:"d3", texto:"Yodo", explicacion:"La deficiencia de yodo no explica el patrón de tibia y perosis."}
+          ]},
+          tratamiento: { pregunta: "¿Qué corrección corresponde al mecanismo estudiado?", correcta: "t1", opciones: [
+            {id:"t1", texto:"Corregir el aporte dietético de Mn en el lote", explicacion:"El experimento muestra un efecto dosis-dependiente del déficit de Mn sobre hueso."},
+            {id:"t2", texto:"Eliminar todos los microminerales", explicacion:"Agravaría la deficiencia."},
+            {id:"t3", texto:"Administrar únicamente sodio", explicacion:"No corrige el defecto de Mn."}
+          ]},
+          prevencion: { pregunta: "¿Qué componente debe controlarse en formulación?", correcta: "p1", opciones: [
+            {id:"p1", texto:"Concentración y biodisponibilidad de Mn en dietas de crecimiento rápido", explicacion:"El desarrollo de tibia y osteoblastos es sensible al aporte de Mn."},
+            {id:"p2", texto:"Solo el contenido energético", explicacion:"No previene una deficiencia específica de Mn."},
+            {id:"p3", texto:"Solo la proteína cruda", explicacion:"No sustituye el control de microminerales."}
+          ]}
+        },
+        pistas: ["Es un micromineral relacionado con cartílago y hueso.", "La perosis es la pista central.", "El experimento comparó tres niveles dietéticos del mismo elemento."],
+        fuentes: [{ autor:"Liu, R. et al.", ano:"2015", titulo:"Effects of manganese deficiency on the microstructure of proximal tibia and OPG/RANKL gene expression in chicks", revista:"Veterinary Research Communications", doi:"10.1007/s11259-015-9626-5", url:"https://pubmed.ncbi.nlm.nih.gov/25634035/" }]
+      },
+      {
+        id: "A-can-white-2001", categoria: "Clínica Veterinaria", especie: "Perros", icono: "🐕", dificultad: "Intermedio", nivelFuente: "A", modos: ["estudio", "examen"],
+        titulo: "Husky con costras perioculares y paraqueratosis",
+        historia: { edad: "Joven-adulto", sexo: "Mixto", raza: "Siberian Husky", sistema: "Casa", alimentacion: "Dieta variable", etapa: "Adulto joven", signos: "Costras perioculares y lesiones cutáneas compatibles con trastorno de queratinización. Biopsia: paraqueratosis.", evolucion: "Patrón representativo de una serie clínica de 41 perros; la mayoría respondió a suplementación con zinc." },
+        decisiones: {
+          diagnostico: { pregunta: "¿Cuál es el diagnóstico más probable?", correcta: "d1", opciones: [
+            {id:"d1", texto:"Dermatosis responsiva a zinc", explicacion:"En la serie de 41 perros, el Husky fue la raza predominante, las costras perioculares fueron frecuentes y todos presentaron paraqueratosis histológica."},
+            {id:"d2", texto:"Hipocalcemia", explicacion:"No explica la distribución cutánea ni la paraqueratosis."},
+            {id:"d3", texto:"Bocio por yodo", explicacion:"No corresponde al patrón dermatológico."}
+          ]},
+          tratamiento: { pregunta: "¿Qué intervención tuvo respuesta en la mayoría de los perros?", correcta: "t1", opciones: [
+            {id:"t1", texto:"Suplementación oral de zinc", explicacion:"La mayoría mejoró con zinc oral; algunos casos requirieron otras estrategias."},
+            {id:"t2", texto:"Calcio oral como única terapia", explicacion:"No corrige el trastorno descrito."},
+            {id:"t3", texto:"Retirar todo el zinc de la dieta", explicacion:"Sería contrario al diagnóstico."}
+          ]},
+          prevencion: { pregunta: "¿Qué dato apoya seguimiento a largo plazo?", correcta: "p1", opciones: [
+            {id:"p1", texto:"La respuesta clínica a zinc y la posible necesidad de mantenimiento", explicacion:"La entidad puede requerir suplementación sostenida según respuesta individual."},
+            {id:"p2", texto:"Un único valor de calcio sérico", explicacion:"No es el marcador central del trastorno."},
+            {id:"p3", texto:"La ausencia de prurito descarta el diagnóstico", explicacion:"El prurito puede variar y no excluye la entidad."}
+          ]}
+        },
+        pistas: ["Raza nórdica.", "La biopsia muestra paraqueratosis.", "La respuesta terapéutica al mineral ayuda a confirmar."],
+        fuentes: [{ autor:"White, S. D. et al.", ano:"2001", titulo:"Zinc-responsive dermatosis in dogs: 41 cases and literature review", revista:"Veterinary Dermatology", doi:"10.1046/j.1365-3164.2001.00233.x", url:"https://pubmed.ncbi.nlm.nih.gov/11360336/" }]
+      },
+      {
+        id: "A-can-colombini-1997", categoria: "Clínica Veterinaria", especie: "Perros", icono: "🐕", dificultad: "Intermedio", nivelFuente: "A", modos: ["estudio", "sorpresa"],
+        titulo: "Dermatosis recurrente en perro de raza nórdica",
+        historia: { edad: "Variable", sexo: "Mixto", raza: "Raza nórdica", sistema: "Casa", alimentacion: "Dieta comercial", etapa: "Joven-adulto", signos: "Lesiones que pueden iniciar de forma unilateral y hacerse simétricas; algunos perros presentan prurito o pioderma secundaria.", evolucion: "En una serie retrospectiva de 17 perros, 15 tuvieron resolución completa con suplementación de zinc; hubo recurrencias en varios animales." },
+        decisiones: {
+          diagnostico: { pregunta: "¿Qué diagnóstico integra raza, histología y respuesta al tratamiento?", correcta: "d1", opciones: [
+            {id:"d1", texto:"Dermatosis responsiva a zinc en razas nórdicas", explicacion:"La serie retrospectiva documentó el patrón clínico y una alta tasa de resolución con zinc."},
+            {id:"d2", texto:"Deficiencia primaria de fósforo", explicacion:"No explica el patrón dermatológico ni la respuesta al zinc."},
+            {id:"d3", texto:"Hipomagnesemia", explicacion:"Produce signos neuromusculares, no este patrón cutáneo."}
+          ]},
+          tratamiento: { pregunta: "¿Qué hallazgo apoya continuar o ajustar el manejo con zinc?", correcta: "t1", opciones: [
+            {id:"t1", texto:"Resolución de lesiones y recurrencia cuando se omiten o reducen dosis", explicacion:"La serie reportó recurrencias asociadas en parte con dosis omitidas o disminuidas."},
+            {id:"t2", texto:"Ausencia total de cualquier recurrencia", explicacion:"No coincide con la serie clínica."},
+            {id:"t3", texto:"Empeoramiento universal con zinc", explicacion:"La mayoría tuvo resolución completa."}
+          ]},
+          prevencion: { pregunta: "¿Qué seguimiento es razonable en animales afectados?", correcta: "p1", opciones: [
+            {id:"p1", texto:"Vigilar recurrencias y adherencia a la suplementación indicada", explicacion:"Las recurrencias fueron frecuentes y algunas se relacionaron con cambios en la suplementación."},
+            {id:"p2", texto:"Suspender todo seguimiento al desaparecer la primera lesión", explicacion:"Ignora el carácter recurrente documentado."},
+            {id:"p3", texto:"Suplementar cobre como sustituto del zinc", explicacion:"No corresponde al trastorno estudiado."}
+          ]}
+        },
+        pistas: ["La raza importa.", "El curso puede ser recurrente.", "La respuesta al zinc fue alta en la serie."],
+        fuentes: [{ autor:"Colombini, S. & Dunstan, R. W.", ano:"1997", titulo:"Zinc-responsive dermatosis in northern-breed dogs: 17 cases (1990-1996)", revista:"Journal of the American Veterinary Medical Association", url:"https://pubmed.ncbi.nlm.nih.gov/9267507/" }]
+      },
+
+      // =====================================================
+      // 5 CASOS DE ALTA DIFICULTAD — Desafío + Sorpresa
+      // =====================================================
+      {
+        id: "D-bov-bittner-2021", categoria: "Producción Animal", especie: "Bovinos", icono: "🐄", dificultad: "Avanzado", nivelFuente: "A", modos: ["desafio", "sorpresa"],
+        titulo: "Vacas nodrizas recumbentes: inanición, Cu/Se y un hemoparásito",
+        historia: { edad: "Adultas", sexo: "Hembras", raza: "Carne", sistema: "Nodrizas", alimentacion: "Aporte nutricional insuficiente", etapa: "Adultas", signos: "Tres vacas recumbentes, bajo estado corporal y pelo áspero. Hematología/bioquímica con alteraciones electrolíticas, enzimas musculares/hepáticas elevadas y concentraciones bajas de Cu y Se; en algunas se detecta Trypanosoma theileri.", evolucion: "Problema de hato, multifactorial; no debe atribuirse a un único hallazgo." },
+        decisiones: {
+          diagnostico: { pregunta: "¿Cuál es la interpretación causal más rigurosa?", correcta: "d1", opciones: [
+            {id:"d1", texto:"Recumbencia multifactorial dominada por malnutrición/inanición, con deficiencias de Cu/Se como posibles contribuyentes y T. theileri asociado", explicacion:"El reporte enfatiza el reto diagnóstico y no demuestra que un solo factor explique toda la recumbencia."},
+            {id:"d2", texto:"Trypanosoma theileri como causa única demostrada", explicacion:"El parásito fue detectado, pero su importancia causal no quedó establecida como explicación única."},
+            {id:"d3", texto:"Hipocalcemia puerperal simple", explicacion:"El contexto, el estado corporal y los múltiples hallazgos no apoyan una explicación única de ese tipo."}
+          ]},
+          tratamiento: { pregunta: "¿Qué enfoque inicial es más coherente?", correcta: "t1", opciones: [
+            {id:"t1", texto:"Soporte del paciente, corrección nutricional y mineral dirigida, y valoración de los demás diferenciales", explicacion:"En un cuadro multifactorial se deben corregir déficits documentados sin ignorar causas concurrentes."},
+            {id:"t2", texto:"Tratar solo el hemoparásito y no modificar la dieta", explicacion:"Ignora la malnutrición y las alteraciones minerales documentadas."},
+            {id:"t3", texto:"Administrar un único mineral sin confirmar el estado del resto", explicacion:"No integra la naturaleza multifactorial del problema."}
+          ]},
+          prevencion: { pregunta: "¿Qué medida reduce mejor el riesgo de recurrencia de hato?", correcta: "p1", opciones: [
+            {id:"p1", texto:"Auditar oferta alimentaria, condición corporal y programa de minerales con vigilancia clínica", explicacion:"La prevención requiere corregir el sistema, no solo al animal recumbente."},
+            {id:"p2", texto:"Esperar a que aparezca recumbencia para suplementar", explicacion:"Es tardío y no corrige el problema de manejo."},
+            {id:"p3", texto:"Eliminar toda suplementación de Se y Cu", explicacion:"Ambos estaban disminuidos en los animales evaluados."}
+          ]}
+        },
+        pistas: ["El caso no tiene una sola causa.", "El estado corporal es una pista mayor.", "Asociación no equivale a causalidad."],
+        fuentes: [{ autor:"Bittner, L. et al.", ano:"2021", titulo:"Malnutrition as the cause of recumbency in suckler cows associated with Trypanosoma theileri infection", revista:"Acta Veterinaria Scandinavica", doi:"10.1186/s13028-020-00567-7", url:"https://pubmed.ncbi.nlm.nih.gov/33422114/" }]
+      },
+      {
+        id: "D-conejo-watson-2024", categoria: "Clínica Veterinaria", especie: "Conejos", icono: "🐇", dificultad: "Avanzado", nivelFuente: "A", modos: ["desafio", "sorpresa"],
+        titulo: "Coneja desnutrida con ataxia y cobre hepático bajo",
+        historia: { edad: "Adulta", sexo: "Hembra", raza: "Cruza enana", sistema: "Rescate", alimentacion: "Malnutrición severa previa", etapa: "Adulto", signos: "Ataxia y debilidad de miembros pélvicos que progresan a decúbito lateral y retención urinaria. Histología: mielopatía torácica y lumbosacra; Cu hepático subóptimo (18 ppm MS; RI del artículo 24-150 ppm).", evolucion: "El estudio describe neurodegeneración y sospecha de deficiencia adquirida de cobre; la relación causal se considera especulativa." },
+        decisiones: {
+          diagnostico: { pregunta: "¿Qué conclusión respeta mejor el nivel de evidencia del artículo?", correcta: "d1", opciones: [
+            {id:"d1", texto:"Mielopatía/neurodegeneración asociada a malnutrición y cobre hepático bajo; deficiencia de Cu como hipótesis plausible, no causalidad demostrada", explicacion:"Los autores describen la deficiencia de cobre como sospechada/especulativa y mantienen otros diferenciales."},
+            {id:"d2", texto:"Deficiencia de cobre demostrada como causa exclusiva", explicacion:"Sobreinterpreta el artículo: la causalidad no fue demostrada."},
+            {id:"d3", texto:"Trauma lumbosacro confirmado", explicacion:"Trauma fue un diferencial, no el diagnóstico confirmado."}
+          ]},
+          tratamiento: { pregunta: "¿Qué conducta sería científicamente más prudente?", correcta: "t1", opciones: [
+            {id:"t1", texto:"Corregir la malnutrición, evaluar el estado de Cu y mantener diferenciales neurológicos abiertos", explicacion:"El caso sugiere una causa nutricional tratable, pero no permite cerrar el diagnóstico exclusivamente por Cu."},
+            {id:"t2", texto:"Suplementar cobre a dosis altas sin evaluación", explicacion:"El margen de seguridad y la causalidad incierta hacen inadecuada una suplementación indiscriminada."},
+            {id:"t3", texto:"Descartar toda causa nutricional", explicacion:"La malnutrición y el Cu hepático bajo forman parte central de los hallazgos."}
+          ]},
+          prevencion: { pregunta: "¿Cuál es la enseñanza principal para interpretar minerales tisulares?", correcta: "p1", opciones: [
+            {id:"p1", texto:"Un valor bajo debe integrarse con dieta, clínica, patología y diferenciales antes de atribuir causalidad", explicacion:"Este caso es un ejemplo claro de asociación compatible pero no prueba causal definitiva."},
+            {id:"p2", texto:"Todo valor fuera de rango confirma por sí solo la etiología", explicacion:"Esa inferencia excede la evidencia."},
+            {id:"p3", texto:"Los tejidos no aportan información útil", explicacion:"El Cu hepático fue un hallazgo relevante, aunque no suficiente por sí solo."}
+          ]}
+        },
+        pistas: ["Lee el lenguaje de causalidad.", "El cobre está bajo, pero eso no cierra el caso.", "La histopatología localiza mejor la lesión que la exploración clínica inicial."],
+        fuentes: [{ autor:"Watson, K. D. et al.", ano:"2024", titulo:"Neurodegeneration in a domestic rabbit with severe malnourishment and low hepatic copper", revista:"Journal of Veterinary Diagnostic Investigation", doi:"10.1177/10406387241258461", url:"https://pubmed.ncbi.nlm.nih.gov/39101522/" }]
+      },
+      {
+        id: "D-bov-weber-2021", categoria: "Producción Animal", especie: "Bovinos", icono: "🐄", dificultad: "Avanzado", nivelFuente: "A", modos: ["desafio", "sorpresa"],
+        titulo: "Hato lechero con sobreoferta crónica de cobre: ¿qué muestra elegir?",
+        historia: { edad: "Adultas y vaquillas", sexo: "Hembras", raza: "Holstein", sistema: "Lechería intensiva", alimentacion: "TMR y suplementos minerales con sobreoferta de Cu; también Zn, Co y Se elevados", etapa: "Preparto y alta producción", signos: "Problema de hato con cambios clínico-químicos discretos. Se analizan sangre, orina, heces, pelo pigmentado, ceruloplasmina y biopsias hepáticas.", evolucion: "La exposición es crónica; distintas muestras reflejan de manera diferente aporte reciente y acumulación corporal." },
+        decisiones: {
+          diagnostico: { pregunta: "¿Cuál es la principal dificultad diagnóstica?", correcta: "d1", opciones: [
+            {id:"d1", texto:"Distinguir exposición reciente de acumulación crónica usando varias matrices y el contexto de suplementación", explicacion:"El estudio compara el valor diagnóstico de múltiples tipos de muestra ante sobreoferta crónica de Cu."},
+            {id:"d2", texto:"Confirmar toxicosis solo con una enzima hepática ligeramente elevada", explicacion:"Los cambios bioquímicos fueron discretos y una sola variable no resume la exposición crónica."},
+            {id:"d3", texto:"Asumir que el bovino nunca puede acumular cobre", explicacion:"Aunque es menos frecuente que en ovinos, el artículo documenta una sobreoferta crónica relevante a nivel de hato."}
+          ]},
+          tratamiento: { pregunta: "¿Qué intervención de hato es prioritaria?", correcta: "t1", opciones: [
+            {id:"t1", texto:"Corregir la sobreoferta mineral identificada y reevaluar el estado con muestras apropiadas", explicacion:"El exceso de suplemento fue el origen de la exposición crónica."},
+            {id:"t2", texto:"Aumentar más el cobre para normalizar ceruloplasmina", explicacion:"Profundizaría la sobreoferta."},
+            {id:"t3", texto:"Ignorar Zn, Co y Se porque solo importa Cu", explicacion:"La TMR mostró sobreoferta de varios minerales y las interacciones deben considerarse."}
+          ]},
+          prevencion: { pregunta: "¿Qué práctica previene mejor este problema?", correcta: "p1", opciones: [
+            {id:"p1", texto:"Auditar la suma de minerales aportados por TMR, premezclas y suplementos y contrastarla con biomonitoreo", explicacion:"Evita la duplicación inadvertida y permite detectar acumulación crónica."},
+            {id:"p2", texto:"Usar siempre la dosis máxima de la etiqueta", explicacion:"Puede causar sobreoferta al sumarse con otras fuentes."},
+            {id:"p3", texto:"Evaluar únicamente plasma", explicacion:"El estudio precisamente cuestiona depender de una sola matriz."}
+          ]}
+        },
+        pistas: ["Piensa en exposición vs depósito.", "No todas las muestras cuentan la misma historia temporal.", "La sobreoferta proviene del programa de suplementación."],
+        fuentes: [{ autor:"Weber, J. et al.", ano:"2021", titulo:"Chronic oversupply with copper as a potential herd health problem on a German dairy farm", revista:"Tierärztliche Praxis G", doi:"10.1055/a-1418-3562", url:"https://pubmed.ncbi.nlm.nih.gov/34157749/" }]
+      },
+      {
+        id: "D-eq-witte-1993", categoria: "Producción Animal", especie: "Equinos", icono: "🐎", dificultad: "Avanzado", nivelFuente: "A", modos: ["desafio", "sorpresa"],
+        titulo: "Selenosis crónica equina: la muestra correcta depende del tiempo",
+        historia: { edad: "Varias edades", sexo: "Mixto", raza: "Equinos", sistema: "Oeste de Iowa", alimentacion: "Heno de alfalfa producido localmente", etapa: "Exposición crónica", signos: "Signos compatibles con selenosis crónica, incluidos cambios de pelo y casco. Dos henos locales fueron identificados como fuente primaria de Se.", evolucion: "La interpretación se complica por variación entre tejidos, duración de exposición y excreción después de retirar la fuente." },
+        decisiones: {
+          diagnostico: { pregunta: "¿Qué estrategia diagnóstica recomienda mejor el artículo?", correcta: "d1", opciones: [
+            {id:"d1", texto:"Recolectar múltiples muestras y confirmar también la fuente alimentaria de Se", explicacion:"Los autores recomiendan múltiples tejidos/matrices porque las concentraciones varían y el tiempo de exposición altera la interpretación."},
+            {id:"d2", texto:"Usar una sola muestra de sangre como prueba definitiva", explicacion:"El artículo destaca las limitaciones de depender de una única muestra."},
+            {id:"d3", texto:"Diagnosticar solo por alopecia", explicacion:"Los signos pueden solaparse entre cuadros leves y severos y requieren confirmación analítica."}
+          ]},
+          tratamiento: { pregunta: "¿Cuál es la primera medida lógica tras identificar la fuente?", correcta: "t1", opciones: [
+            {id:"t1", texto:"Retirar el alimento contaminado y dar soporte según el daño presente", explicacion:"Eliminar la exposición es esencial; la interpretación posterior debe considerar eliminación y duración de exposición."},
+            {id:"t2", texto:"Añadir selenio inyectable", explicacion:"Aumentaría la carga tóxica."},
+            {id:"t3", texto:"Mantener el mismo heno hasta normalizar sangre", explicacion:"Perpetúa la exposición."}
+          ]},
+          prevencion: { pregunta: "¿Qué variable debe acompañar siempre al resultado analítico?", correcta: "p1", opciones: [
+            {id:"p1", texto:"Historia de nivel y duración de exposición, además del tiempo desde que se retiró la fuente", explicacion:"Estos factores cambian la utilidad de cada muestra y la concentración esperada."},
+            {id:"p2", texto:"Solo la edad del caballo", explicacion:"Es insuficiente para interpretar el patrón temporal del Se."},
+            {id:"p3", texto:"Solo la estación del año", explicacion:"No sustituye la historia de exposición."}
+          ]}
+        },
+        pistas: ["No existe una muestra perfecta para todos los momentos.", "El heno es parte del diagnóstico.", "Exposición histórica y estado actual pueden diferir."],
+        fuentes: [{ autor:"Witte, S. T. et al.", ano:"1993", titulo:"Chronic selenosis in horses fed locally produced alfalfa hay", revista:"Journal of the American Veterinary Medical Association", url:"https://pubmed.ncbi.nlm.nih.gov/8440631/" }]
+      },
+      {
+        id: "D-fel-zambarbieri-2023", categoria: "Clínica Veterinaria", especie: "Gatos", icono: "🐈", dificultad: "Avanzado", nivelFuente: "A", modos: ["desafio", "sorpresa"],
+        titulo: "Gatito con deformación facial: integrar dieta, Ca:P y PTH",
+        historia: { edad: "6 meses", sexo: "Macho entero", raza: "Doméstico de pelo corto", sistema: "Casa", alimentacion: "Alimento complementario y atún, similar a una dieta casi exclusivamente cárnica", etapa: "Crecimiento", signos: "Pobre crecimiento, renuencia a moverse y deformación del perfil nasal.", evolucion: "La investigación integra historia dietética, metabolismo mineral y medición inmunoenzimática de PTH intacta felina." },
+        decisiones: {
+          diagnostico: { pregunta: "¿Qué diagnóstico integra mejor los datos?", correcta: "d1", opciones: [
+            {id:"d1", texto:"Hiperparatiroidismo nutricional secundario por desequilibrio Ca:P de una dieta inadecuada", explicacion:"El caso muestra que el problema no es simplemente 'falta de calcio', sino una dieta desbalanceada que altera la homeostasis mineral y la PTH."},
+            {id:"d2", texto:"Hiperparatiroidismo primario demostrado", explicacion:"La historia dietética y el patrón metabólico apoyan una causa nutricional secundaria."},
+            {id:"d3", texto:"Deficiencia de hierro", explicacion:"No explica la deformación ósea ni el eje PTH-Ca:P."}
+          ]},
+          tratamiento: { pregunta: "¿Cuál es el eje de la corrección?", correcta: "t1", opciones: [
+            {id:"t1", texto:"Sustituir la dieta desequilibrada por una alimentación completa y balanceada para crecimiento", explicacion:"La causa de base es nutricional y requiere corregir el aporte relativo de minerales y la dieta completa."},
+            {id:"t2", texto:"Mantener la dieta de atún y añadir fósforo", explicacion:"Aumentaría el desequilibrio Ca:P."},
+            {id:"t3", texto:"Tratar únicamente el dolor sin modificar la dieta", explicacion:"No corrige la causa primaria."}
+          ]},
+          prevencion: { pregunta: "¿Qué enseñanza evita simplificar demasiado el caso?", correcta: "p1", opciones: [
+            {id:"p1", texto:"Evaluar la dieta completa y la relación Ca:P, no solo preguntar si 'consume calcio'", explicacion:"El metabolismo óseo depende del balance dietético y de la respuesta hormonal."},
+            {id:"p2", texto:"Toda dieta con carne es adecuada si aporta proteína", explicacion:"La proteína no garantiza equilibrio mineral."},
+            {id:"p3", texto:"La PTH no aporta información en gatos", explicacion:"El caso se apoyó precisamente en la medición de PTH intacta felina."}
+          ]}
+        },
+        pistas: ["Es un animal en crecimiento.", "La dieta es casi exclusivamente cárnica.", "No olvides la respuesta de PTH al desequilibrio mineral."],
+        fuentes: [{ autor:"Zambarbieri, J. et al.", ano:"2023", titulo:"Nutritional secondary hyperparathyroidism in a kitten, supported by immunoenzymatic measurement of feline intact parathyroid hormone", revista:"Journal of Veterinary Diagnostic Investigation", doi:"10.1177/10406387221143463", url:"https://pubmed.ncbi.nlm.nih.gov/36625404/" }]
+      }
+    ];
+
+    // Banco curado para Modo Examen. La presentación Minerales 2026-2 es la fuente principal
+    // para clasificación, funciones generales, fuentes, biodisponibilidad e interacciones.
+    const EXAMEN_CONCEPTUAL_DATA = [
+      {id:"f1", categoria:"funciones", enunciado:"¿Qué función mineral se relaciona directamente con Ca, Mg, Se y Zn según la presentación?", opciones:[{texto:"Permeabilidad celular",correcta:true},{texto:"Síntesis exclusiva de glucógeno",correcta:false},{texto:"Formación de urea",correcta:false},{texto:"Digestión enzimática de almidón",correcta:false}]},
+      {id:"f2", categoria:"funciones", enunciado:"¿Qué mineral participa de forma destacada en transferencias de energía junto con el hierro?", opciones:[{texto:"Fósforo",correcta:true},{texto:"Yodo",correcta:false},{texto:"Molibdeno",correcta:false},{texto:"Cloro",correcta:false}]},
+      {id:"f3", categoria:"funciones", enunciado:"¿Qué grupo de minerales participa directamente en la excitabilidad neuromuscular?", opciones:[{texto:"Na, K, Ca y Mg",correcta:true},{texto:"Cu, Mo, Se y I",correcta:false},{texto:"Fe, Zn, Co y Mn",correcta:false},{texto:"P, S, I y Cr",correcta:false}]},
+      {id:"f4", categoria:"funciones", enunciado:"En la presentación, ¿qué micromineral se destaca por su participación en formación de anticuerpos?", opciones:[{texto:"Zinc",correcta:true},{texto:"Molibdeno",correcta:false},{texto:"Cobalto",correcta:false},{texto:"Hierro",correcta:false}]},
+
+      {id:"a1", categoria:"absorcion", enunciado:"¿Cuál de los siguientes factores ligados al animal puede modificar la absorción mineral?", opciones:[{texto:"Estado fisiológico",correcta:true},{texto:"Color del comedero",correcta:false},{texto:"Longitud del corral",correcta:false},{texto:"Hora de ordeño como único factor",correcta:false}]},
+      {id:"a2", categoria:"absorcion", enunciado:"Según la presentación, en general los microminerales en forma orgánica son:", opciones:[{texto:"Más biodisponibles que las formas inorgánicas",correcta:true},{texto:"Siempre menos biodisponibles",correcta:false},{texto:"Inabsorbibles en rumiantes",correcta:false},{texto:"Equivalentes sin importar la forma química",correcta:false}]},
+      {id:"a3", categoria:"absorcion", enunciado:"¿Qué compuesto vegetal puede formar complejos poco digeribles con minerales, especialmente con fósforo?", opciones:[{texto:"Ácido fítico",correcta:true},{texto:"Glucosa",correcta:false},{texto:"Lactosa",correcta:false},{texto:"Urea",correcta:false}]},
+      {id:"a4", categoria:"absorcion", enunciado:"¿Cuál es el orden inicial de mayor a menor disponibilidad de fuentes inorgánicas mostrado en la presentación?", opciones:[{texto:"Sulfatos > cloruros > óxidos",correcta:true},{texto:"Óxidos > sulfatos > cloruros",correcta:false},{texto:"Carbonatos > ácidos > sulfatos",correcta:false},{texto:"Fosfatos > yoduros > sulfatos",correcta:false}]},
+
+      {id:"s1", categoria:"fuentes", enunciado:"¿Cuál es una fuente inorgánica de calcio incluida en Minerales 2026-2?", opciones:[{texto:"Carbonato de calcio",correcta:true},{texto:"Melaza de caña",correcta:false},{texto:"Salvado de trigo",correcta:false},{texto:"Germen de maíz",correcta:false}]},
+      {id:"s2", categoria:"fuentes", enunciado:"¿Cuál es una fuente inorgánica de magnesio señalada en la presentación?", opciones:[{texto:"Óxido de magnesio",correcta:true},{texto:"Yoduro de sodio",correcta:false},{texto:"Sulfato ferroso",correcta:false},{texto:"Molibdato de amonio",correcta:false}]},
+      {id:"s3", categoria:"fuentes", enunciado:"¿Cuál es una fuente inorgánica de zinc señalada en la presentación?", opciones:[{texto:"Sulfato de zinc",correcta:true},{texto:"Fosfato dicálcico",correcta:false},{texto:"Cloruro de potasio",correcta:false},{texto:"Selenito de calcio",correcta:false}]},
+      {id:"s4", categoria:"fuentes", enunciado:"¿Cuál de las siguientes aparece como fuente orgánica de cobre?", opciones:[{texto:"Melaza",correcta:true},{texto:"Carbonato de calcio",correcta:false},{texto:"Cloruro de potasio",correcta:false},{texto:"Yoduro de sodio",correcta:false}]},
+
+      {id:"i1", categoria:"interacciones", enunciado:"Un exceso de azufre puede favorecer carencia secundaria de:", opciones:[{texto:"Cobre, zinc y selenio",correcta:true},{texto:"Calcio exclusivamente",correcta:false},{texto:"Sodio exclusivamente",correcta:false},{texto:"Potasio y cloro exclusivamente",correcta:false}]},
+      {id:"i2", categoria:"interacciones", enunciado:"¿Qué interacción molecular se destaca de forma explícita en la presentación?", opciones:[{texto:"S, Mo y Cu",correcta:true},{texto:"Na, I y Cr",correcta:false},{texto:"K, Fe y Cl",correcta:false},{texto:"Ca, Co y Na",correcta:false}]},
+      {id:"i3", categoria:"interacciones", enunciado:"El exceso de calcio puede reducir la biodisponibilidad al formar complejos con:", opciones:[{texto:"Fósforo y magnesio",correcta:true},{texto:"Yodo y cobalto",correcta:false},{texto:"Sodio y cloro",correcta:false},{texto:"Selenio y cromo exclusivamente",correcta:false}]},
+      {id:"i4", categoria:"interacciones", enunciado:"En la tabla de antagonismos, el exceso de zinc puede favorecer carencia secundaria de:", opciones:[{texto:"Cobre e hierro",correcta:true},{texto:"Calcio y fósforo",correcta:false},{texto:"Sodio y potasio",correcta:false},{texto:"Yodo y cobalto",correcta:false}]},
+
+      {id:"d1", categoria:"deficiencia", enunciado:"En rumiantes, ¿qué signo se asocia de forma característica con deficiencia de yodo en la tabla de la presentación?", opciones:[{texto:"Bocio",correcta:true},{texto:"Hemoglobinuria",correcta:false},{texto:"Perosis",correcta:false},{texto:"Selenosis",correcta:false}]},
+      {id:"d2", categoria:"deficiencia", enunciado:"¿Qué micromineral se relaciona con degeneración muscular en la tabla de deficiencias de rumiantes?", opciones:[{texto:"Selenio",correcta:true},{texto:"Yodo",correcta:false},{texto:"Cobalto",correcta:false},{texto:"Molibdeno",correcta:false}]},
+      {id:"d3", categoria:"deficiencia", enunciado:"Un lechón confinado con palidez intensa y disnea tiene mayor riesgo de deficiencia de:", opciones:[{texto:"Hierro",correcta:true},{texto:"Yodo",correcta:false},{texto:"Molibdeno",correcta:false},{texto:"Azufre",correcta:false}]},
+      {id:"d4", categoria:"deficiencia", enunciado:"La paraqueratosis porcina se asocia principalmente con deficiencia funcional de:", opciones:[{texto:"Zinc",correcta:true},{texto:"Sodio",correcta:false},{texto:"Yodo",correcta:false},{texto:"Fósforo",correcta:false}]},
+
+      {id:"t1", categoria:"toxicidad", enunciado:"¿Qué especie es especialmente susceptible a una crisis hemolítica por acumulación crónica de cobre?", opciones:[{texto:"Ovinos",correcta:true},{texto:"Gallinas ponedoras",correcta:false},{texto:"Conejos",correcta:false},{texto:"Caballos",correcta:false}]},
+      {id:"t2", categoria:"toxicidad", enunciado:"Alopecia de crin/cola y lesiones de casco en un caballo expuesto crónicamente sugieren exceso de:", opciones:[{texto:"Selenio",correcta:true},{texto:"Hierro",correcta:false},{texto:"Yodo",correcta:false},{texto:"Magnesio",correcta:false}]},
+      {id:"t3", categoria:"toxicidad", enunciado:"¿Qué problema puede favorecer un exceso crónico de fósforo relativo al calcio en equinos?", opciones:[{texto:"Osteodistrofia fibrosa",correcta:true},{texto:"Anemia ferropénica",correcta:false},{texto:"Bocio congénito",correcta:false},{texto:"Músculo blanco",correcta:false}]},
+      {id:"t4", categoria:"toxicidad", enunciado:"Una suplementación mineral excesiva debe evitarse principalmente porque:", opciones:[{texto:"Puede generar toxicidad e interacciones que causen carencias secundarias",correcta:true},{texto:"Todos los minerales se excretan sin efecto",correcta:false},{texto:"La biodisponibilidad nunca cambia",correcta:false},{texto:"Los microminerales no interactúan entre sí",correcta:false}]}
+    ];
+
+    const AppState = {
+      currentView: 'inicio',
+      currentMode: 'estudio', // estudio, examen, desafio
+      currentFilter: 'todos',
+      activeCase: null,
+      activeCaseStep: 'diagnostico', // diagnostico, tratamiento, prevencion, final
+      activeCaseScore: 100,
+      activeCaseHintsUsed: 0,
+      activeCaseAnswers: {},
+      casesHistory: [],
+      lastCaseId: null,
+      userStats: {
+        casesCompleted: 0, casesAttempts: 0, completedCaseIds: [], casesSuccess: 0, totalScore: 0, hintsCount: 0,
+        errorsByMineral: {},
+        exam: { attempts: 0, scores: [], lastScore: null, bestScore: null, averageScore: null, passed: 0 },
+        review: { total: 0, correct: 0, answeredIds: {}, byMineral: {}, byCategory: {} },
+        performanceBySpecies: {
+          "Bovinos": { total: 0, aciertos: 0 }, "Ovinos": { total: 0, aciertos: 0 }, "Caprinos": { total: 0, aciertos: 0 },
+          "Equinos": { total: 0, aciertos: 0 }, "Porcinos": { total: 0, aciertos: 0 }, "Aves": { total: 0, aciertos: 0 },
+          "Perros": { total: 0, aciertos: 0 }, "Gatos": { total: 0, aciertos: 0 }, "Conejos": { total: 0, aciertos: 0 }
+        }
+      },
+      currentRepasoIndex: 0,
+      repasoFilter: 'todos',
+      examState: null
+    };
+
+    function loadSavedProgress() {
+      try {
+        const saved = localStorage.getItem('vetminerals_v2_progress');
+        if (saved) AppState.userStats = Object.assign(AppState.userStats, JSON.parse(saved));
+        // Migración compatible con versiones anteriores
+        if (!Array.isArray(AppState.userStats.completedCaseIds)) AppState.userStats.completedCaseIds = [];
+        if (typeof AppState.userStats.casesAttempts !== 'number') AppState.userStats.casesAttempts = AppState.userStats.casesCompleted || 0;
+        if (!AppState.userStats.exam) AppState.userStats.exam = { attempts:0, scores:[], lastScore:null, bestScore:null, averageScore:null, passed:0 };
+        if (!Array.isArray(AppState.userStats.exam.scores)) AppState.userStats.exam.scores = [];
+        if (!AppState.userStats.review) AppState.userStats.review = { total:0, correct:0, answeredIds:{}, byMineral:{}, byCategory:{} };
+        if (!AppState.userStats.review.answeredIds) AppState.userStats.review.answeredIds = {};
+        if (!AppState.userStats.review.byMineral) AppState.userStats.review.byMineral = {};
+        if (!AppState.userStats.review.byCategory) AppState.userStats.review.byCategory = {};
+        if (!AppState.userStats.performanceBySpecies) AppState.userStats.performanceBySpecies = {};
+        [...new Set(CASOS_DATA.map(c => c.especie))].forEach(sp => {
+          if (!AppState.userStats.performanceBySpecies[sp]) AppState.userStats.performanceBySpecies[sp] = { total: 0, aciertos: 0 };
+        });
+      } catch (e) { console.warn('LocalStorage error:', e); }
+    }
+
+    function saveProgress() {
+      try { localStorage.setItem('vetminerals_v2_progress', JSON.stringify(AppState.userStats)); }
+      catch (e) { console.warn('LocalStorage error:', e); }
+      actualizarProgresoUI();
+    }
+
+    // Funciones Modales UI UI/UX
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('toast-notification');
+      document.getElementById('toast-message').textContent = message;
+      // Styling type
+      toast.className = `fixed bottom-6 right-6 z-50 transform transition-all duration-300 px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 ${type === 'warning' ? 'bg-amber-600 text-white' : type === 'success' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-white'}`;
+      toast.classList.remove('translate-y-full', 'opacity-0');
+      setTimeout(() => toast.classList.add('translate-y-full', 'opacity-0'), 3500);
+    }
+
+    function confirmarReinicio() { document.getElementById('confirm-modal').classList.remove('hidden'); }
+    function cancelarReinicio() { document.getElementById('confirm-modal').classList.add('hidden'); }
+    
+    function ejecutarReinicio() {
+      AppState.userStats = {
+        casesCompleted: 0, casesAttempts: 0, completedCaseIds: [], casesSuccess: 0, totalScore: 0, hintsCount: 0, errorsByMineral: {},
+        exam: { attempts:0, scores:[], lastScore:null, bestScore:null, averageScore:null, passed:0 },
+        review: { total:0, correct:0, answeredIds:{}, byMineral:{}, byCategory:{} },
+        performanceBySpecies: { "Bovinos": { total: 0, aciertos: 0 }, "Ovinos": { total: 0, aciertos: 0 }, "Caprinos": { total: 0, aciertos: 0 }, "Equinos": { total: 0, aciertos: 0 }, "Porcinos": { total: 0, aciertos: 0 }, "Aves": { total: 0, aciertos: 0 }, "Perros": { total: 0, aciertos: 0 }, "Gatos": { total: 0, aciertos: 0 }, "Conejos": { total: 0, aciertos: 0 } }
+      };
+      AppState.casesHistory = [];
+      AppState.lastCaseId = null;
+      saveProgress();
+      document.getElementById('confirm-modal').classList.add('hidden');
+      showToast('Historial académico reiniciado a cero.', 'success');
+    }
+
+    function navigateTo(viewId) {
+      AppState.currentView = viewId;
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById(`view-${viewId}`).classList.remove('hidden');
+
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('bg-slate-100', 'text-vet-600', 'font-bold'));
+      const activeNavBtn = document.getElementById(`nav-${viewId}`);
+      if (activeNavBtn) activeNavBtn.classList.add('bg-slate-100', 'text-vet-600', 'font-bold');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (viewId === 'aprender') renderMineralesGrid();
+      if (viewId === 'interacciones') renderInteraccionesGrid();
+      if (viewId === 'repasar') renderRepaso();
+      if (viewId === 'casos') renderCasosDashboard();
+      if (viewId === 'progreso') actualizarProgresoUI();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
+
+    function setAppMode(mode) {
+      AppState.currentMode = mode;
+      const badge = document.getElementById('current-mode-badge');
+      const btns = ['estudio', 'examen', 'desafio'].map(id => document.getElementById(`btn-mode-${id}`));
+      btns.forEach(b => { if(b) b.classList.remove('bg-white', 'text-vet-700', 'shadow-xs', 'bg-clinical-600', 'text-white', 'bg-amber-600', 'text-amber-700'); b.classList.add('text-slate-600'); });
+      
+      if (mode === 'estudio') { badge.textContent = 'Modo Estudio'; badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-vet-700 border border-emerald-200'; btns[0].classList.add('bg-white', 'text-vet-700', 'shadow-xs'); btns[0].classList.remove('text-slate-600'); }
+      else if (mode === 'examen') { badge.textContent = 'Modo Examen 📝'; badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-clinical-700 border border-blue-200'; btns[1].classList.add('bg-white', 'text-clinical-700', 'shadow-xs'); btns[1].classList.remove('text-slate-600'); }
+      else if (mode === 'desafio') { badge.textContent = 'Modo Desafío 🔥'; badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300'; btns[2].classList.add('bg-white', 'text-amber-700', 'shadow-xs'); btns[2].classList.remove('text-slate-600'); }
+      AppState.activeCase = null;
+      if (mode !== 'examen') AppState.examState = null;
+      if (AppState.currentView === 'casos') renderCasosDashboard();
+    }
+
+    function filtrarMinerales(cat) {
+      AppState.currentFilter = cat;
+      document.querySelectorAll('.filter-btn').forEach(b => { b.classList.remove('bg-slate-800', 'text-white'); b.classList.add('bg-slate-100', 'text-slate-700'); });
+      document.getElementById(cat === 'todos' ? 'filter-todos' : cat === 'Macromineral' ? 'filter-macro' : cat === 'Micromineral' ? 'filter-micro' : 'filter-electro').classList.replace('bg-slate-100', 'bg-slate-800');
+      renderMineralesGrid();
+    }
+
+    function renderMineralesGrid() {
+      const container = document.getElementById('minerales-grid');
+      const items = MINERALES_DATA.filter(m => AppState.currentFilter === 'todos' || m.clasificacion === AppState.currentFilter);
+      container.innerHTML = items.map(min => `
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 card-hover flex flex-col justify-between shadow-sm relative overflow-hidden">
+          <div class="space-y-4">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-vet-50 border border-vet-200 text-vet-700 flex items-center justify-center font-black text-xl mono shadow-inner">${min.simbolo}</div>
+                <div>
+                  <h3 class="font-bold text-lg text-slate-800">${min.nombre}</h3>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold ${min.clasificacion === 'Macromineral' ? 'bg-emerald-50 text-emerald-700' : 'bg-blue-50 text-blue-700'}">${min.clasificacion}</span>
+                </div>
+              </div>
+              ${min.isDemo ? '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded badge-demo">DEMO</span>' : ''}
+            </div>
+            <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed">${min.funciones}</p>
+            <div class="p-3 rounded-xl bg-amber-50/70 border border-amber-200/80 text-amber-900 text-xs font-medium">${min.claveRecordar}</div>
+          </div>
+          <div class="pt-5 mt-4 border-t border-slate-100 flex items-center justify-between">
+            <span class="text-[10px] text-slate-400 font-medium">${min.especies.slice(0, 3).join(', ')}...</span>
+            <button onclick="abrirMineralModal('${min.id}')" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition flex items-center gap-1">Ficha Completa <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+          </div>
+        </div>
+      `).join('');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function abrirMineralModal(id) {
+      const min = MINERALES_DATA.find(m => m.id === id);
+      document.getElementById('mineral-modal-symbol').textContent = min.simbolo;
+      document.getElementById('mineral-modal-name').textContent = min.nombre;
+      document.getElementById('mineral-modal-class').textContent = min.clasificacion;
+      document.getElementById('mineral-modal-species').textContent = `Especies: ${min.especies.join(', ')}`;
+      
+      document.getElementById('mineral-modal-body').innerHTML = `
+        <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 font-medium text-xs leading-relaxed">${min.claveRecordar}</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-1"><h4 class="font-bold text-xs uppercase tracking-wider text-slate-400">Funciones</h4><p class="text-xs text-slate-700">${min.funciones}</p></div>
+          <div class="space-y-1"><h4 class="font-bold text-xs uppercase tracking-wider text-slate-400">Fuentes</h4><p class="text-xs text-slate-700">${min.fuentes}</p></div>
+          <div class="space-y-1"><h4 class="font-bold text-xs uppercase tracking-wider text-slate-400">Absorción</h4><p class="text-xs text-slate-700">${min.absorcion}</p></div>
+          <div class="space-y-1"><h4 class="font-bold text-xs uppercase tracking-wider text-slate-400">Interacciones</h4><p class="text-xs text-slate-700">${min.interacciones}</p></div>
+        </div>
+        <div class="p-4 rounded-2xl bg-rose-50/70 border border-rose-200 space-y-1"><h4 class="font-bold text-xs uppercase text-rose-800 flex items-center gap-1.5"><i data-lucide="alert-circle" class="w-4 h-4"></i> Deficiencia</h4><p class="text-xs text-rose-950 font-bold">${min.deficiencia}</p><p class="text-xs text-slate-700 mt-1">${min.signosDeficiencia}</p></div>
+        <div class="p-4 rounded-2xl bg-amber-50/50 border border-amber-200 space-y-1"><h4 class="font-bold text-xs uppercase text-amber-800 flex items-center gap-1.5"><i data-lucide="shield-alert" class="w-4 h-4"></i> Toxicidad</h4><p class="text-xs text-amber-950 font-bold">${min.toxicidad}</p><p class="text-xs text-slate-700 mt-1">${min.signosToxicidad}</p></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-1"><h4 class="font-bold text-xs uppercase text-slate-400">Diagnóstico</h4><p class="text-xs text-slate-700">${min.diagnostico}</p></div>
+          <div class="space-y-1"><h4 class="font-bold text-xs uppercase text-slate-400">Tratamiento</h4><p class="text-xs text-slate-700">${min.tratamiento}</p></div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-600 space-y-1.5"><h4 class="font-bold uppercase text-slate-500 mb-1 flex items-center gap-1"><i data-lucide="book-marked" class="w-3.5 h-3.5"></i> Fuentes de esta ficha</h4><p><strong>Fuente principal:</strong> ${PRESENTACION_MINERALES.autor} (${PRESENTACION_MINERALES.ano}). <em>${PRESENTACION_MINERALES.titulo}</em>.</p><p><strong>Fuente complementaria:</strong> ${min.fuente.autor} (${min.fuente.ano}). <em>${min.fuente.titulo}</em>. ${min.fuente.revista}</p><p class="text-[10px] text-slate-400 pt-1">La presentación sustenta la base de clasificación, funciones generales, fuentes, biodisponibilidad e interacciones cuando están descritas; la referencia complementaria conserva el detalle clínico o fisiopatológico no desarrollado en la presentación.</p></div>
+      `;
+      document.getElementById('mineral-modal').classList.remove('hidden');
+      if(window.lucide) lucide.createIcons();
+    }
+    function cerrarMineralModal() { document.getElementById('mineral-modal').classList.add('hidden'); }
+
+    function renderInteraccionesGrid() {
+      document.getElementById('interacciones-grid').innerHTML = INTERACCIONES_DATA.map(i => `
+        <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-7 card-hover shadow-sm flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="flex justify-between items-center"><span class="px-3 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-clinical-700 border border-blue-200">${i.tipo}</span></div>
+            <h3 class="text-xl font-extrabold text-slate-800">${i.titulo}</h3>
+            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1"><span class="font-bold text-slate-500 uppercase text-[9px]">Mecanismo:</span><p class="text-slate-700">${i.mecanismo}</p></div>
+            <div><span class="font-bold text-slate-500 uppercase text-[9px]">Consecuencia clínica:</span><p class="text-xs text-rose-700 font-medium">${i.consecuencia}</p></div>
+            <div><span class="font-bold text-slate-500 uppercase text-[9px]">Implicación productiva:</span><p class="text-xs text-slate-600">${i.implicacion}</p></div>
+          </div>
+          <div class="pt-3 border-t border-slate-100 flex justify-between text-[10px] text-slate-400">
+            <span class="flex items-center gap-1"><i data-lucide="paw-print" class="w-3.5 h-3.5"></i> ${i.especies.join(', ')}</span><span class="italic">${i.fuente}</span>
+          </div>
+        </div>
+      `).join('');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function cambiarFiltroRepaso(val) { AppState.repasoFilter = val; AppState.currentRepasoIndex = 0; renderRepaso(); }
+    
+    function renderRepaso() {
+      const pf = REPASO_DATA.filter(q => AppState.repasoFilter === 'todos' || q.tipo === AppState.repasoFilter);
+      const box = document.getElementById('repaso-box');
+      if (!pf.length) { box.innerHTML = `<p class="text-center text-sm text-slate-500 py-8">No hay preguntas.</p>`; return; }
+      
+      const q = pf[AppState.currentRepasoIndex];
+      box.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex justify-between text-xs text-slate-400 font-semibold border-b pb-3"><span class="uppercase">Ejercicio ${AppState.currentRepasoIndex + 1} / ${pf.length}</span><span class="px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border uppercase font-bold text-[9px]">${q.tipo}</span></div>
+          <h3 class="text-lg font-bold">${q.titulo}</h3>
+          <p class="text-sm bg-slate-50 p-4 rounded-2xl border font-medium">${q.enunciado}</p>
+          <div class="space-y-3">
+            ${q.opciones.map((o, idx) => `<button onclick="responderRepaso(${idx})" class="repaso-opt-btn w-full text-left p-4 rounded-xl border border-slate-200 hover:border-purple-300 hover:bg-purple-50/50 text-sm font-medium transition flex items-start gap-3"><span class="w-6 h-6 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center text-xs shrink-0">${String.fromCharCode(65+idx)}</span><span class="pt-0.5">${o.texto}</span></button>`).join('')}
+          </div>
+          <div id="repaso-feedback" class="hidden p-4 rounded-2xl border text-sm space-y-2"></div>
+          <div class="pt-4 border-t flex justify-between">
+            <button onclick="navRepaso(-1)" class="px-4 py-2 rounded-xl text-xs font-bold border transition">← Anterior</button>
+            <button onclick="navRepaso(1)" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-white transition">Siguiente →</button>
+          </div>
+        </div>
+      `;
+    }
+    
+    function responderRepaso(i) {
+      const q = REPASO_DATA.filter(qu => AppState.repasoFilter === 'todos' || qu.tipo === AppState.repasoFilter)[AppState.currentRepasoIndex];
+      const opt = q.opciones[i];
+      const fb = document.getElementById('repaso-feedback');
+
+      // Registrar solo la primera respuesta de ese reactivo dentro del progreso acumulado
+      const rs = AppState.userStats.review;
+      if (!rs.answeredIds[q.id]) {
+        rs.answeredIds[q.id] = true;
+        rs.total++;
+        if (opt.correcta) rs.correct++;
+        if (!rs.byMineral[q.mineral]) rs.byMineral[q.mineral] = { total:0, correct:0 };
+        if (!rs.byCategory[q.tipo]) rs.byCategory[q.tipo] = { total:0, correct:0 };
+        rs.byMineral[q.mineral].total++;
+        rs.byCategory[q.tipo].total++;
+        if (opt.correcta) {
+          rs.byMineral[q.mineral].correct++;
+          rs.byCategory[q.tipo].correct++;
+        }
+        saveProgress();
+      }
+      document.querySelectorAll('.repaso-opt-btn').forEach((b, idx) => {
+        b.disabled = true;
+        if(q.opciones[idx].correcta) b.classList.add('bg-emerald-50','border-emerald-500','text-emerald-900');
+        else if(idx === i) b.classList.add('bg-rose-50','border-rose-400','text-rose-900');
+      });
+      fb.classList.remove('hidden');
+      fb.className = opt.correcta ? 'p-4 rounded-2xl border border-emerald-200 bg-emerald-50 text-emerald-900 text-sm space-y-1.5' : 'p-4 rounded-2xl border border-rose-200 bg-rose-50 text-rose-900 text-sm space-y-1.5';
+      fb.innerHTML = `<div class="font-bold flex items-center gap-2 ${opt.correcta ? 'text-emerald-800' : 'text-rose-800'}"><i data-lucide="${opt.correcta ? 'check-circle-2' : 'x-circle'}" class="w-4 h-4"></i> ${opt.correcta ? '¡Correcto!' : 'Incorrecto'}</div><p>${opt.feedback}</p>`;
+      if (window.lucide) lucide.createIcons();
+    }
+    
+    function navRepaso(d) {
+      const len = REPASO_DATA.filter(q => AppState.repasoFilter === 'todos' || q.tipo === AppState.repasoFilter).length;
+      AppState.currentRepasoIndex = (AppState.currentRepasoIndex + d + len) % len;
+      renderRepaso();
+    }
+
+    let filterEsp = 'todos', filterDif = 'todos';
+    function filtrarCasosPorDificultad(d) { filterDif = d; AppState.activeCase = null; renderCasosDashboard(); }
+    function filtrarCasosPorEspecie(e) { filterEsp = e; AppState.activeCase = null; renderCasosDashboard(); }
+
+    function caseAllowedInMode(c, mode) {
+      if (Array.isArray(c.modos)) return c.modos.includes(mode);
+      if (mode === 'estudio') return true;
+      if (mode === 'examen') return c.dificultad !== 'Básico';
+      if (mode === 'desafio') return c.dificultad === 'Avanzado';
+      if (mode === 'sorpresa') return true;
+      return true;
+    }
+
+    function actualizarConteoCasos() {
+      const total = CASOS_DATA.length;
+      const prod = CASOS_DATA.filter(c => c.categoria.includes('Producción')).length;
+      const clin = total - prod;
+      const n = document.getElementById('nav-case-count');
+      if (n) n.textContent = total;
+      const sm = document.getElementById('case-count-summary');
+      if (sm) sm.textContent = `${total} casos: ${prod} Producción y ${clin} Clínica Veterinaria. La disponibilidad cambia según la modalidad.`;
+    }
+
+    function renderCasosDashboard() {
+      actualizarConteoCasos();
+      const btnC = document.getElementById('species-filter-buttons');
+      if (btnC) {
+        const species = ['todos', ...new Set(CASOS_DATA.map(c => c.especie))];
+        btnC.innerHTML = species.map(e => `<button onclick="filtrarCasosPorEspecie('${e}')" class="px-2.5 py-1 rounded-md text-xs font-semibold ${filterEsp === e ? 'bg-slate-800 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}">${e === 'todos' ? 'Todas' : e}</button>`).join('');
+      }
+
+      if (AppState.currentMode === 'examen') { renderExamMode(); return; }
+      if (AppState.activeCase) renderActiveCasePlayer();
+      else renderCasesCatalog();
+    }
+
+    function renderCasesCatalog() {
+      const cont = document.getElementById('case-active-container');
+      const fc = CASOS_DATA.filter(c => caseAllowedInMode(c, AppState.currentMode) && (filterEsp === 'todos' || c.especie === filterEsp) && (filterDif === 'todos' || c.dificultad === filterDif));
+      if (!fc.length) { cont.innerHTML = `<div class="p-12 text-center text-slate-500 font-medium bg-white rounded-2xl border">No hay casos en este filtro para ${AppState.currentMode === 'desafio' ? 'Modo Desafío' : 'esta modalidad'}.</div>`; return; }
+
+      cont.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-5">${fc.map(c => `
+        <div class="bg-white rounded-2xl border p-6 card-hover shadow-sm flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="flex justify-between"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${c.categoria.includes('Producción') ? 'bg-emerald-50 text-vet-700 border-emerald-200' : 'bg-blue-50 text-clinical-700 border-blue-200'}">${c.icono} ${c.especie}</span><span class="text-[10px] font-bold ${c.dificultad === 'Básico' ? 'text-emerald-600' : c.dificultad === 'Intermedio' ? 'text-amber-600' : 'text-rose-600'}">${c.dificultad}${c.nivelFuente ? ` · Fuente ${c.nivelFuente}` : ''}</span></div>
+            <h3 class="font-bold text-slate-800">${c.titulo}</h3>
+            <p class="text-xs text-slate-600 line-clamp-3">${c.historia.signos}</p>
+          </div>
+          <div class="pt-4 border-t flex justify-between"><span class="text-xs font-medium text-slate-400">100 Puntos</span><button onclick="iniciarCaso('${c.id}')" class="px-4 py-2 bg-vet-600 text-white text-xs font-bold rounded-xl shadow-sm hover:bg-vet-500 flex gap-1.5 items-center">Iniciar <i data-lucide="play" class="w-3.5 h-3.5"></i></button></div>
+        </div>
+      `).join('')}</div>`;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function shuffleArray(a) { for(let i=a.length-1; i>0; i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+    function lanzarCasoSorpresa() {
+      let pool = CASOS_DATA.filter(c => caseAllowedInMode(c, 'sorpresa') && c.id !== AppState.lastCaseId);
+      if(!pool.length) pool = CASOS_DATA.filter(c => caseAllowedInMode(c, 'sorpresa'));
+      AppState.currentMode = 'estudio';
+      navigateTo('casos');
+      iniciarCaso(pool[Math.floor(Math.random() * pool.length)].id);
+    }
+
+    function getExamEligibleCases() {
+      return CASOS_DATA.filter(c => caseAllowedInMode(c, 'examen') && c.dificultad !== 'Básico' && (filterEsp === 'todos' || c.especie === filterEsp) && (filterDif === 'todos' || c.dificultad === filterDif));
+    }
+
+    function generarExamen() {
+      const cats = ['funciones','absorcion','fuentes','interacciones','deficiencia','toxicidad'];
+      const elegidas = [];
+      cats.forEach(cat => {
+        const pool = EXAMEN_CONCEPTUAL_DATA.filter(q => q.categoria === cat && !elegidas.includes(q));
+        if(pool.length) elegidas.push(pool[Math.floor(Math.random()*pool.length)]);
+      });
+      const restantes = EXAMEN_CONCEPTUAL_DATA.filter(q => !elegidas.includes(q));
+      shuffleArray(restantes);
+      elegidas.push(...restantes.slice(0, 2));
+
+      const conceptuales = elegidas.slice(0,8).map(q => ({
+        ...q,
+        tipo: 'conceptual',
+        opciones: shuffleArray(q.opciones.map(o => ({...o})))
+      }));
+
+      let casos = getExamEligibleCases();
+      if (casos.length < 2) casos = CASOS_DATA.filter(c => caseAllowedInMode(c, 'examen') && c.dificultad !== 'Básico');
+      shuffleArray(casos);
+      const casoQs = casos.slice(0,2).map(c => {
+        const d = c.decisiones.diagnostico;
+        return {
+          id: `exam-${c.id}`,
+          categoria: 'caso', tipo: 'caso', casoId: c.id,
+          enunciado: d.pregunta,
+          contexto: `${c.icono} ${c.especie} — ${c.titulo}. ${c.historia.signos}`,
+          opciones: shuffleArray(d.opciones.map(o => ({texto:o.texto, correcta:o.id === d.correcta}))),
+          fuente: c.fuentes?.[0]
+        };
+      });
+
+      AppState.examState = { preguntas: shuffleArray([...conceptuales, ...casoQs]), index:0, respuestas:{}, finalizado:false };
+      renderExamMode();
+    }
+
+    function renderExamMode() {
+      const cont = document.getElementById('case-active-container');
+      if (!AppState.examState) {
+        const elegibles = getExamEligibleCases().length;
+        cont.innerHTML = `
+          <div class="bg-white rounded-3xl border border-blue-200 shadow-sm max-w-3xl mx-auto overflow-hidden">
+            <div class="p-7 bg-gradient-to-r from-blue-900 to-indigo-900 text-white">
+              <div class="text-xs font-bold text-blue-200 uppercase tracking-wider">Modo Examen</div>
+              <h3 class="text-2xl font-black mt-1">Examen aleatorio de 10 reactivos</h3>
+              <p class="text-sm text-blue-100 mt-2">8 preguntas conceptuales + 2 casos clínicos/productivos. Sin pistas ni retroalimentación hasta finalizar.</p>
+            </div>
+            <div class="p-7 space-y-5">
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                <div class="p-3 bg-slate-50 rounded-xl border"><strong class="block text-slate-500">Conceptuales</strong><span class="text-xl font-black">8</span></div>
+                <div class="p-3 bg-slate-50 rounded-xl border"><strong class="block text-slate-500">Casos</strong><span class="text-xl font-black">2</span></div>
+                <div class="p-3 bg-slate-50 rounded-xl border"><strong class="block text-slate-500">Casos básicos</strong><span class="text-xl font-black text-rose-600">0</span></div>
+                <div class="p-3 bg-slate-50 rounded-xl border"><strong class="block text-slate-500">Casos elegibles</strong><span class="text-xl font-black">${elegibles}</span></div>
+              </div>
+              <p class="text-xs text-slate-600">Las preguntas abarcan funciones, absorción/biodisponibilidad, fuentes, interacciones, deficiencias y toxicidad. El orden de reactivos y de opciones cambia en cada intento.</p>
+              <button onclick="generarExamen()" class="w-full px-5 py-3 rounded-xl bg-clinical-600 hover:bg-clinical-500 text-white font-bold shadow-sm">Comenzar examen</button>
+            </div>
+          </div>`;
+        if(window.lucide) lucide.createIcons();
+        return;
+      }
+      if (AppState.examState.finalizado) { renderExamResult(); return; }
+      renderExamQuestion();
+    }
+
+    function renderExamQuestion() {
+      const st = AppState.examState, q = st.preguntas[st.index], cont = document.getElementById('case-active-container');
+      const sel = st.respuestas[q.id];
+      cont.innerHTML = `
+        <div class="bg-white rounded-3xl border border-blue-200 shadow-sm max-w-3xl mx-auto p-6 sm:p-8 space-y-6">
+          <div class="flex justify-between items-center border-b pb-4">
+            <div><span class="text-[10px] uppercase font-bold text-blue-600">${q.tipo === 'caso' ? 'Caso aplicado' : q.categoria}</span><h3 class="font-black text-xl">Pregunta ${st.index+1} de ${st.preguntas.length}</h3></div>
+            <span class="text-sm font-black text-clinical-700">${Math.round(((st.index+1)/st.preguntas.length)*100)}%</span>
+          </div>
+          ${q.contexto ? `<div class="p-4 rounded-2xl bg-clinical-50 border border-blue-100 text-sm text-slate-700">${q.contexto}</div>` : ''}
+          <h4 class="text-lg font-bold text-slate-800">${q.enunciado}</h4>
+          <div class="space-y-3">${q.opciones.map((o,i)=>`
+            <button onclick="seleccionarRespuestaExamen('${q.id}', ${i})" class="exam-opt w-full text-left p-4 rounded-xl border transition font-medium flex gap-3 ${sel===i?'border-clinical-600 bg-blue-50 ring-2 ring-blue-200':'hover:bg-slate-50'}">
+              <span class="w-7 h-7 rounded bg-slate-100 flex justify-center items-center font-bold text-xs shrink-0">${String.fromCharCode(65+i)}</span><span>${o.texto}</span>
+            </button>`).join('')}</div>
+          <div class="flex justify-between pt-3">
+            <button onclick="navegarPreguntaExamen(-1)" ${st.index===0?'disabled':''} class="px-4 py-2 rounded-xl border text-xs font-bold ${st.index===0?'opacity-40 cursor-not-allowed':'hover:bg-slate-50'}">Anterior</button>
+            ${st.index < st.preguntas.length-1 ? `<button onclick="navegarPreguntaExamen(1)" class="px-5 py-2 rounded-xl bg-clinical-600 text-white text-xs font-bold">Siguiente</button>` : `<button onclick="finalizarExamen()" class="px-5 py-2 rounded-xl bg-vet-600 text-white text-xs font-bold">Finalizar examen</button>`}
+          </div>
+        </div>`;
+    }
+
+    function seleccionarRespuestaExamen(qid, idx) {
+      AppState.examState.respuestas[qid] = idx;
+      renderExamQuestion();
+    }
+    function navegarPreguntaExamen(dir) {
+      const st=AppState.examState;
+      st.index=Math.max(0,Math.min(st.preguntas.length-1,st.index+dir));
+      renderExamQuestion();
+      window.scrollTo({top:100,behavior:'smooth'});
+    }
+    function finalizarExamen() {
+      const st=AppState.examState;
+      const faltantes=st.preguntas.filter(q => st.respuestas[q.id] === undefined).length;
+      if(faltantes){ showToast(`Faltan ${faltantes} reactivo(s) por responder.`, 'warning'); return; }
+      st.finalizado=true;
+      if (!st.recorded) {
+        const correctas = st.preguntas.filter(q => q.opciones[st.respuestas[q.id]]?.correcta).length;
+        const pct = Math.round((correctas/st.preguntas.length)*100);
+        const es = AppState.userStats.exam;
+        es.attempts++;
+        es.scores.push(pct);
+        es.lastScore = pct;
+        es.bestScore = es.bestScore === null ? pct : Math.max(es.bestScore, pct);
+        es.averageScore = Math.round(es.scores.reduce((a,b)=>a+b,0) / es.scores.length);
+        if (pct >= 70) es.passed++;
+        st.recorded = true;
+        saveProgress();
+      }
+      renderExamResult();
+    }
+    function renderExamResult() {
+      const st=AppState.examState, cont=document.getElementById('case-active-container');
+      const correctas=st.preguntas.filter(q => q.opciones[st.respuestas[q.id]]?.correcta).length;
+      const pct=Math.round((correctas/st.preguntas.length)*100);
+      cont.innerHTML=`
+        <div class="bg-white rounded-3xl border shadow-sm max-w-4xl mx-auto p-6 sm:p-8 space-y-6">
+          <div class="text-center space-y-2"><div class="text-5xl">${pct>=80?'🏆':pct>=60?'📘':'🧠'}</div><h3 class="text-3xl font-black">Resultado: ${correctas}/10</h3><p class="text-lg font-bold ${pct>=70?'text-vet-600':'text-amber-700'}">${pct}%</p><p class="text-xs text-slate-500">La revisión se muestra hasta ahora; durante el examen no se revelaron respuestas.</p></div>
+          <div class="space-y-3">${st.preguntas.map((q,i)=>{ const r=q.opciones[st.respuestas[q.id]], ok=r?.correcta; const buena=q.opciones.find(o=>o.correcta); return `<div class="p-4 rounded-2xl border ${ok?'bg-emerald-50 border-emerald-200':'bg-rose-50 border-rose-200'} text-sm"><div class="font-bold">${i+1}. ${q.enunciado}</div>${q.contexto?`<div class="text-xs text-slate-500 mt-1">${q.contexto}</div>`:''}<div class="mt-2 text-xs"><strong>Tu respuesta:</strong> ${r?.texto || 'Sin respuesta'} ${ok?'✅':'❌'}</div>${!ok?`<div class="text-xs mt-1"><strong>Correcta:</strong> ${buena?.texto}</div>`:''}${q.fuente?`<div class="text-[10px] text-slate-400 mt-2">Fuente del caso: ${q.fuente.autor} (${q.fuente.ano})</div>`:''}</div>`}).join('')}</div>
+          <div class="flex justify-center"><button onclick="AppState.examState=null; renderExamMode()" class="px-6 py-3 bg-clinical-600 text-white rounded-xl font-bold text-sm">Generar otro examen</button></div>
+        </div>`;
+    }
+
+    function iniciarCaso(id) {
+      AppState.lastCaseId = id; AppState.activeCase = CASOS_DATA.find(c => c.id === id);
+      AppState.activeCaseStep = 'diagnostico'; AppState.activeCaseScore = 100;
+      AppState.activeCaseHintsUsed = 0; AppState.activeCaseAnswers = {};
+      AppState.activeCaseRecorded = false;
+      renderCasosDashboard(); window.scrollTo({top: 100, behavior: 'smooth'});
+    }
+
+    function renderActiveCasePlayer() {
+      const c = AppState.activeCase, cont = document.getElementById('case-active-container');
+      if (AppState.activeCaseStep === 'final') { renderCaseFinalSummary(cont); return; }
+      
+      const stepNames = { diagnostico: '1/3: 🩺 Diagnóstico Clínico', tratamiento: '2/3: 💊 Tratamiento de Urgencia', prevencion: '3/3: 🌱 Mejora Preventiva' };
+      const curData = c.decisiones[AppState.activeCaseStep];
+      if (!curData._shuffledOptions) curData._shuffledOptions = shuffleArray([...curData.opciones]);
+
+      // Timer display (Optional feature for Desafío Mode)
+      const timerUI = AppState.currentMode === 'desafio' ? `<span class="px-2 py-1 bg-rose-100 text-rose-700 font-bold text-xs rounded animate-pulse">⏰ Modo Desafío (Sin Pistas)</span>` : '';
+      
+      // Hints display logic
+      const hintUI = AppState.currentMode !== 'examen' && AppState.currentMode !== 'desafio' ? `
+        <button onclick="solicitarPista()" class="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 border text-amber-800 font-bold text-xs shadow-sm flex items-center gap-1">
+          <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> Pista (${3 - AppState.activeCaseHintsUsed})
+        </button>` : '';
+
+      cont.innerHTML = `
+        <div class="space-y-6">
+          <div class="bg-white rounded-2xl border p-6 shadow-sm space-y-4">
+            <div class="flex flex-wrap justify-between items-center border-b pb-3">
+              <div class="flex items-center gap-2 text-2xl">${c.icono} <div><h3 class="text-lg font-black text-slate-800">${c.titulo}</h3><span class="text-xs text-slate-500">${c.especie}</span></div></div>
+              <div class="flex items-center gap-3">
+                ${timerUI}
+                <div class="text-right mr-2"><span class="text-[9px] uppercase font-bold text-slate-400">Pts Reales</span><div class="text-xl font-black ${AppState.activeCaseScore>=70?'text-emerald-600':'text-amber-600'}">${AppState.activeCaseScore}</div></div>
+                ${hintUI}
+                <button onclick="AppState.activeCase=null; renderCasosDashboard()" class="p-2 rounded hover:bg-slate-100"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
+              </div>
+            </div>
+            
+            <div id="hint-box" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs"></div>
+            
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+              <div class="p-3 bg-slate-50 rounded-xl border"><span class="font-bold text-slate-400 block">Paciente</span><span class="font-semibold">${c.historia.raza} (${c.historia.sexo}, ${c.historia.edad})</span></div>
+              <div class="p-3 bg-slate-50 rounded-xl border"><span class="font-bold text-slate-400 block">Sistema</span><span class="font-semibold">${c.historia.sistema}</span></div>
+              <div class="p-3 bg-slate-50 rounded-xl border"><span class="font-bold text-slate-400 block">Alimentación</span><span class="font-semibold">${c.historia.alimentacion}</span></div>
+              <div class="p-3 bg-slate-50 rounded-xl border"><span class="font-bold text-slate-400 block">Etapa</span><span class="font-semibold">${c.historia.etapa}</span></div>
+            </div>
+            <div class="p-4 bg-clinical-50/60 rounded-2xl border text-sm space-y-1"><strong class="text-clinical-700 block mb-1">Signos Clínicos:</strong><p>${c.historia.signos}</p><p class="text-xs text-slate-500 mt-2"><strong>Evolución:</strong> ${c.historia.evolucion}</p></div>
+          </div>
+          
+          <div class="bg-white rounded-2xl border p-6 shadow-sm space-y-5">
+            <div class="flex justify-between border-b pb-3"><span class="font-bold text-sm text-vet-700 uppercase">${stepNames[AppState.activeCaseStep]}</span></div>
+            <h4 class="text-lg font-bold">${curData.pregunta}</h4>
+            <div class="space-y-3">${curData._shuffledOptions.map((o,i) => `
+              <button onclick="seleccionarOpcionCaso('${o.id}')" id="opt-btn-${o.id}" class="case-option-btn w-full text-left p-4 rounded-xl border text-sm transition font-medium flex gap-3 hover:bg-vet-50"><span class="w-6 h-6 rounded bg-slate-100 flex justify-center items-center font-bold text-xs shrink-0">${String.fromCharCode(65+i)}</span><span class="pt-0.5">${o.texto}</span></button>
+            `).join('')}</div>
+            <div class="pt-4 flex justify-end"><button id="case-submit-btn" disabled onclick="confirmarRespuestaCaso()" class="px-6 py-2.5 bg-slate-300 text-slate-500 font-bold text-xs rounded-xl transition cursor-not-allowed">Confirmar y Evaluar</button></div>
+          </div>
+        </div>
+      `;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    let selOptId = null;
+    function seleccionarOpcionCaso(id) {
+      selOptId = id;
+      document.querySelectorAll('.case-option-btn').forEach(b => b.classList.remove('border-vet-600','bg-vet-50','ring-2','ring-vet-500'));
+      document.getElementById(`opt-btn-${id}`).classList.add('border-vet-600','bg-vet-50','ring-2','ring-vet-500');
+      const sub = document.getElementById('case-submit-btn');
+      sub.disabled = false; sub.className = "px-6 py-2.5 bg-vet-600 hover:bg-vet-500 text-white font-bold text-xs rounded-xl transition";
+    }
+
+    function solicitarPista() {
+      const c = AppState.activeCase;
+      if (AppState.activeCaseHintsUsed >= 3) { showToast('Todas las pistas agotadas (3/3).', 'warning'); return; }
+      const cost = AppState.activeCaseHintsUsed === 0 ? 5 : AppState.activeCaseHintsUsed === 1 ? 10 : 15;
+      AppState.activeCaseScore = Math.max(0, AppState.activeCaseScore - cost);
+      AppState.userStats.hintsCount++;
+      const hb = document.getElementById('hint-box');
+      hb.classList.remove('hidden');
+      hb.innerHTML = `<span class="font-bold text-amber-800">💡 Pista ${AppState.activeCaseHintsUsed + 1} (-${cost} pts):</span> <span class="text-amber-900">${c.pistas[AppState.activeCaseHintsUsed]}</span>`;
+      AppState.activeCaseHintsUsed++;
+      renderActiveCasePlayer(); // re-render para actualizar puntaje
+    }
+
+    function confirmarRespuestaCaso() {
+      if(!selOptId) return;
+      const c = AppState.activeCase, s = AppState.activeCaseStep, d = c.decisiones[s];
+      const isC = (selOptId === d.correcta);
+      AppState.activeCaseAnswers[s] = { sel: selOptId, correct: isC };
+      
+      if (!isC) {
+        AppState.activeCaseScore = Math.max(0, AppState.activeCaseScore - 20);
+        if(!AppState.userStats.errorsByMineral[c.id]) AppState.userStats.errorsByMineral[c.id] = 0;
+        AppState.userStats.errorsByMineral[c.id]++;
+      }
+      
+      const sObj = d.opciones.find(o => o.id === selOptId), cObj = d.opciones.find(o => o.id === d.correcta);
+      const mod = document.getElementById('feedback-modal'), con = document.getElementById('feedback-modal-content');
+      
+      if (isC) {
+        con.innerHTML = `
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-100 flex center items-center justify-center"><i data-lucide="check-circle" class="w-10 h-10 text-vet-600"></i></div>
+          <h3 class="text-2xl font-black text-slate-800">✅ ¡Decisión Correcta!</h3>
+          <p class="text-sm bg-emerald-50 p-4 rounded-xl border border-emerald-200 text-emerald-900 font-medium">${cObj.explicacion}</p>
+          <span class="text-[11px] bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-bold">+30 Pts Acreditados</span>
+        `;
+      } else {
+        const dramas = ["☠️ ¡Paciente Crítico!", "🏃 ¡Te corrió el Productor!", "🎭 ¡Drama Fisiológico!", "💀 ¡Adiós, paciente!", "🚨 ¡Llamen al Especialista!"];
+        const dTitle = dramas[Math.floor(Math.random() * dramas.length)];
+        // Animación caricaturesca CSS pura en SVG
+        con.innerHTML = `
+          <div class="w-20 h-20 mx-auto flex items-center justify-center animate-wiggle">
+            <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow"><circle cx="50" cy="50" r="45" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/><line x1="28" y1="35" x2="42" y2="49" stroke="#991b1b" stroke-width="4" stroke-linecap="round"/><line x1="42" y1="35" x2="28" y2="49" stroke="#991b1b" stroke-width="4" stroke-linecap="round"/><line x1="58" y1="35" x2="72" y2="49" stroke="#991b1b" stroke-width="4" stroke-linecap="round"/><line x1="72" y1="35" x2="58" y2="49" stroke="#991b1b" stroke-width="4" stroke-linecap="round"/><path d="M 32 68 Q 50 82 68 68" fill="none" stroke="#991b1b" stroke-width="4" stroke-linecap="round"/><path d="M 45 74 C 45 88 55 88 55 74 Z" fill="#ef4444" stroke="#991b1b" stroke-width="2"/></svg>
+          </div>
+          <h3 class="text-2xl font-black text-rose-700">${dTitle}</h3>
+          <div class="text-left bg-rose-50 p-4 rounded-xl border border-rose-200 text-sm space-y-2">
+            <p class="font-bold text-rose-900">❌ Seleccionaste: "${sObj.texto}"</p><p class="text-slate-700">${sObj.explicacion}</p>
+            <div class="pt-2 border-t border-rose-200"><span class="font-bold text-emerald-800">💡 Lo correcto era:</span> <span class="font-medium">${cObj.texto}</span></div>
+          </div>
+          <span class="text-[11px] bg-rose-100 text-rose-800 px-3 py-1 rounded-full font-bold">Penalización: -20 Pts</span>
+        `;
+      }
+      mod.classList.remove('hidden');
+      if(window.lucide) lucide.createIcons();
+    }
+
+    function cerrarFeedbackModal() {
+      document.getElementById('feedback-modal').classList.add('hidden');
+      selOptId = null;
+      if (AppState.activeCaseStep === 'diagnostico') AppState.activeCaseStep = 'tratamiento';
+      else if (AppState.activeCaseStep === 'tratamiento') AppState.activeCaseStep = 'prevencion';
+      else if (AppState.activeCaseStep === 'prevencion') AppState.activeCaseStep = 'final';
+      renderActiveCasePlayer();
+    }
+
+    function renderCaseFinalSummary(cont) {
+      const c = AppState.activeCase, a = AppState.activeCaseAnswers;
+      const allC = a.diagnostico.correct && a.tratamiento.correct && a.prevencion.correct;
+      if (AppState.activeCaseHintsUsed === 0) AppState.activeCaseScore = Math.min(100, AppState.activeCaseScore + 10);
+      
+      if (!AppState.activeCaseRecorded) {
+        AppState.userStats.casesAttempts++;
+        AppState.userStats.casesCompleted = AppState.userStats.casesAttempts; // compatibilidad con versiones previas
+        if (!AppState.userStats.completedCaseIds.includes(c.id)) AppState.userStats.completedCaseIds.push(c.id);
+        AppState.userStats.totalScore += AppState.activeCaseScore;
+        if (allC) AppState.userStats.casesSuccess++;
+        if (!AppState.userStats.performanceBySpecies[c.especie]) AppState.userStats.performanceBySpecies[c.especie] = { total: 0, aciertos: 0 };
+        AppState.userStats.performanceBySpecies[c.especie].total++;
+        if (allC) AppState.userStats.performanceBySpecies[c.especie].aciertos++;
+        AppState.activeCaseRecorded = true;
+        saveProgress();
+      }
+
+      cont.innerHTML = `
+        <div class="bg-white rounded-3xl border p-8 shadow-sm max-w-3xl mx-auto text-center space-y-6">
+          <div class="w-20 h-20 mx-auto rounded-3xl ${allC?'bg-emerald-100 text-vet-600':'bg-amber-100 text-amber-700'} flex justify-center items-center text-4xl">${allC?'🏆':'📋'}</div>
+          <div><h3 class="text-3xl font-black">${c.titulo}</h3><p class="text-sm text-slate-500">${c.especie}</p></div>
+          <div class="inline-block px-6 py-3 rounded-2xl bg-slate-50 border shadow-inner"><span class="text-4xl font-extrabold ${AppState.activeCaseScore>=70?'text-vet-600':'text-rose-600'}">${AppState.activeCaseScore}</span><span class="text-slate-400 font-bold text-sm"> / 100 Pts</span></div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-left">
+            <div class="p-3.5 rounded-xl border ${a.diagnostico.correct?'bg-emerald-50 border-emerald-200':'bg-rose-50 border-rose-200'}"><strong>1. Diagnóstico</strong><br>${a.diagnostico.correct?'✅ Acertado':'❌ Fallido'}</div>
+            <div class="p-3.5 rounded-xl border ${a.tratamiento.correct?'bg-emerald-50 border-emerald-200':'bg-rose-50 border-rose-200'}"><strong>2. Tratamiento</strong><br>${a.tratamiento.correct?'✅ Acertado':'❌ Fallido'}</div>
+            <div class="p-3.5 rounded-xl border ${a.prevencion.correct?'bg-emerald-50 border-emerald-200':'bg-rose-50 border-rose-200'}"><strong>3. Prevención</strong><br>${a.prevencion.correct?'✅ Acertada':'❌ Fallida'}</div>
+          </div>
+          <div class="p-4 bg-slate-50 rounded-2xl border text-left text-xs"><strong class="flex items-center gap-1 mb-2 uppercase text-slate-500"><i data-lucide="book-open" class="w-4 h-4"></i> Referencias ${c.nivelFuente ? `(Fuente nivel ${c.nivelFuente})` : '(DEMO/Reales)'}</strong>${c.fuentes.map(f=>`<p><strong>${f.autor} (${f.ano})</strong>. <em>${f.titulo}</em>. ${f.revista}${f.doi ? ` · DOI: ${f.doi}` : ''}${f.url ? ` · <a href="${f.url}" target="_blank" rel="noopener" class="text-blue-600 underline">PubMed</a>` : ''}</p>`).join('')}</div>
+          <div class="pt-4 flex gap-3 justify-center">
+            <button onclick="lanzarCasoSorpresa()" class="px-5 py-2.5 rounded-xl bg-amber-500 text-white font-bold text-xs shadow-sm hover:bg-amber-600 transition">Siguiente Sorpresa</button>
+            <button onclick="AppState.activeCase=null; renderCasosDashboard()" class="px-5 py-2.5 rounded-xl bg-slate-800 text-white font-bold text-xs hover:bg-slate-900 transition">Catálogo</button>
+          </div>
+        </div>
+      `;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function actualizarProgresoUI() {
+      const s = AppState.userStats;
+      const tot = CASOS_DATA.length;
+      const uniqueCases = Array.isArray(s.completedCaseIds) ? s.completedCaseIds.length : 0;
+      const attempts = s.casesAttempts || s.casesCompleted || 0;
+      const p = attempts > 0 ? Math.round((s.casesSuccess/attempts)*100) : 0;
+
+      if(document.getElementById('kpi-casos-totales')) document.getElementById('kpi-casos-totales').textContent = uniqueCases;
+      if(document.getElementById('kpi-casos-universo')) document.getElementById('kpi-casos-universo').textContent = `de ${tot} · ${attempts} intento${attempts===1?'':'s'}`;
+      if(document.getElementById('bar-casos-pct')) document.getElementById('bar-casos-pct').style.width = `${Math.min(100,(uniqueCases/tot)*100)}%`;
+      if(document.getElementById('kpi-aciertos-pct')) document.getElementById('kpi-aciertos-pct').textContent = `${p}%`;
+      if(document.getElementById('kpi-aciertos-conteo')) document.getElementById('kpi-aciertos-conteo').textContent = `${s.casesSuccess} éxito${s.casesSuccess===1?'':'s'}`;
+      if(document.getElementById('bar-aciertos-pct')) document.getElementById('bar-aciertos-pct').style.width = `${p}%`;
+      if(document.getElementById('kpi-puntos')) document.getElementById('kpi-puntos').textContent = s.totalScore;
+      if(document.getElementById('kpi-pistas')) document.getElementById('kpi-pistas').textContent = s.hintsCount;
+
+      const es = s.exam || {attempts:0,scores:[],lastScore:null,bestScore:null,averageScore:null,passed:0};
+      const examSet = (id,val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+      examSet('exam-attempts', es.attempts || 0);
+      examSet('exam-last', es.lastScore === null ? '—' : `${es.lastScore}%`);
+      examSet('exam-best', es.bestScore === null ? '—' : `${es.bestScore}%`);
+      examSet('exam-average', es.averageScore === null ? '—' : `${es.averageScore}%`);
+      examSet('exam-passed', es.passed || 0);
+
+      const rs = s.review || {total:0,correct:0,byMineral:{},byCategory:{}};
+      const reviewPct = rs.total ? Math.round((rs.correct/rs.total)*100) : null;
+      const reviewSet = (id,val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+      reviewSet('review-bank-size', `${REPASO_DATA.length} preguntas`);
+      reviewSet('review-total', rs.total || 0);
+      reviewSet('review-correct', rs.correct || 0);
+      reviewSet('review-pct', reviewPct === null ? '—' : `${reviewPct}%`);
+
+      const rbm = document.getElementById('review-by-mineral');
+      if (rbm) {
+        rbm.innerHTML = MINERALES_DATA.map(m => {
+          const d = rs.byMineral?.[m.id] || {total:0,correct:0};
+          const pctM = d.total ? Math.round((d.correct/d.total)*100) : 0;
+          return `<div><div class="flex justify-between text-[11px] font-semibold"><span>${m.simbolo} · ${m.nombre}</span><span>${d.total ? pctM+'%' : '—'}</span></div><div class="w-full bg-slate-100 rounded-full h-1.5 mt-1"><div class="bg-purple-500 h-1.5 rounded-full" style="width:${pctM}%"></div></div></div>`;
+        }).join('');
+      }
+
+      const catLabels = {identificacion:'Identificación',funcion:'Función',fuentes:'Fuentes',absorcion:'Absorción',deficiencia:'Deficiencia',toxicidad:'Toxicidad',interacciones:'Interacciones',diagnostico:'Diagnóstico'};
+      const rbc = document.getElementById('review-by-category');
+      if (rbc) {
+        rbc.innerHTML = Object.keys(catLabels).map(cat => {
+          const d = rs.byCategory?.[cat] || {total:0,correct:0};
+          const pctC = d.total ? Math.round((d.correct/d.total)*100) : 0;
+          return `<div><div class="flex justify-between text-[11px] font-semibold"><span>${catLabels[cat]}</span><span>${d.total ? pctC+'%' : '—'}</span></div><div class="w-full bg-slate-100 rounded-full h-1.5 mt-1"><div class="bg-vet-500 h-1.5 rounded-full" style="width:${pctC}%"></div></div></div>`;
+        }).join('');
+      }
+
+      const spB = document.getElementById('species-progress-bars');
+      if (spB) {
+        spB.innerHTML = Object.keys(s.performanceBySpecies).map(sp => {
+          const dt = s.performanceBySpecies[sp], pctSp = dt.total > 0 ? Math.round((dt.aciertos/dt.total)*100) : 0;
+          return `<div><div class="flex justify-between text-xs font-semibold mb-1"><span class="text-slate-700">${sp} (${dt.total})</span><span>${pctSp}%</span></div><div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-vet-500 h-2 rounded-full" style="width:${pctSp}%"></div></div></div>`;
+        }).join('');
+      }
+
+      const wk = document.getElementById('weak-areas-container');
+      if (wk) {
+        const reviewWeak = Object.entries(rs.byMineral || {})
+          .filter(([,d]) => d.total >= 2)
+          .map(([id,d]) => ({id, pct:Math.round((d.correct/d.total)*100), total:d.total}))
+          .sort((a,b)=>a.pct-b.pct)
+          .slice(0,2);
+
+        if(reviewWeak.length) {
+          wk.innerHTML = reviewWeak.map(x => {
+            const m=MINERALES_DATA.find(mm=>mm.id===x.id);
+            return `<div class="p-2.5 bg-purple-50 rounded-xl border text-xs flex justify-between items-center"><span class="font-bold text-purple-900">${m?m.nombre:x.id}: ${x.pct}%</span><button onclick="cambiarFiltroRepaso('todos'); navigateTo('repasar')" class="px-2 py-1 bg-purple-200 font-bold rounded">Repasar</button></div>`;
+          }).join('');
+        } else {
+          const errs = Object.keys(s.errorsByMineral);
+          if(!errs.length) wk.innerHTML = `<p class="p-3 bg-slate-50 rounded-xl border text-xs text-slate-500">Resuelve casos y preguntas de repaso para calibrar debilidades.</p>`;
+          else wk.innerHTML = errs.sort((a,b)=>s.errorsByMineral[b]-s.errorsByMineral[a]).slice(0,3).map(id => {
+            const cv = CASOS_DATA.find(x=>x.id===id);
+            return `<div class="p-2.5 bg-amber-50 rounded-xl border text-xs flex justify-between items-center"><span class="font-bold text-amber-900">${cv?cv.especie:id} (Err: ${s.errorsByMineral[id]})</span><button onclick="iniciarCaso('${id}'); navigateTo('casos')" class="px-2 py-1 bg-amber-200 font-bold rounded">Repasar</button></div>`;
+          }).join('');
+        }
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function generarReporteModal() {
+      const s = AppState.userStats;
+      const attempts = s.casesAttempts || s.casesCompleted || 0;
+      const uniqueCases = s.completedCaseIds?.length || 0;
+      const pct = attempts > 0 ? Math.round((s.casesSuccess/attempts)*100) : 0;
+      const es = s.exam || {attempts:0,bestScore:null};
+      document.getElementById('report-modal-body').innerHTML = `
+        <div class="p-4 bg-slate-50 rounded-2xl border flex justify-between items-center">
+          <div><span class="text-xs font-bold text-slate-400">Efectividad en casos</span><div class="text-3xl font-black">${pct}%</div></div>
+          <div class="text-right"><span class="text-xs font-bold text-slate-400">Puntaje acumulado</span><div class="text-2xl font-black text-amber-600">${s.totalScore}</div></div>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs mt-4">
+          <div class="p-3 bg-white border rounded-xl"><span class="text-slate-400">Casos únicos</span><br><strong class="text-lg">${uniqueCases}/${CASOS_DATA.length}</strong></div>
+          <div class="p-3 bg-white border rounded-xl"><span class="text-slate-400">Intentos de casos</span><br><strong class="text-lg">${attempts}</strong></div>
+          <div class="p-3 bg-white border rounded-xl"><span class="text-slate-400">Éxitos</span><br><strong class="text-lg text-emerald-600">${s.casesSuccess}</strong></div>
+          <div class="p-3 bg-white border rounded-xl"><span class="text-slate-400">Pistas</span><br><strong class="text-lg text-blue-600">${s.hintsCount}</strong></div>
+        </div>
+        <div class="mt-4 p-4 rounded-2xl border border-blue-200 bg-blue-50">
+          <div class="text-xs font-black uppercase tracking-wider text-blue-700 mb-3">Modo Examen</div>
+          <div class="grid grid-cols-2 gap-3 text-center">
+            <div class="p-3 bg-white rounded-xl border"><span class="text-xs text-slate-400">Mejor calificación</span><div class="text-2xl font-black text-vet-600">${es.bestScore === null ? '—' : es.bestScore+'%'}</div></div>
+            <div class="p-3 bg-white rounded-xl border"><span class="text-xs text-slate-400">Intentos realizados</span><div class="text-2xl font-black text-clinical-700">${es.attempts || 0}</div></div>
+          </div>
+        </div>
+        <p class="mt-4 p-3 bg-amber-50 rounded-xl border text-xs text-amber-900 font-medium">Recomendación: ${pct > 80 ? 'Excelente razonamiento clínico. Continúa con interacciones complejas.' : 'Reforzar bases fisiopatológicas y metabolismo de interacciones.'}</p>
+      `;
+      document.getElementById('report-modal').classList.remove('hidden');
+    }
+    function cerrarReporteModal() { document.getElementById('report-modal').classList.add('hidden'); }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSavedProgress(); renderMineralesGrid(); renderInteraccionesGrid();
+      renderRepaso(); actualizarConteoCasos(); renderCasosDashboard(); actualizarProgresoUI();
+      if (window.lucide) lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
